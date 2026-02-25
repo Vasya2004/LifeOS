@@ -1,0 +1,39 @@
+# v0 runtime files (should only exist in preview, not in git)
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+
+# Dependencies
+node_modules/
+.next/
+out/
+build/
+
+# IDE & Config
+.vscode/
+.idea/
+.DS_Store
+.claude/
+.gemini/
+*.tsbuildinfo
+
+# Secrets
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Vercel
+.vercel
+
+# Temporary files
+tmp/
+temp/
+*.log
+
+# Public artifacts (previews)
+preview.html
+test.html
+open-lifeos.html
