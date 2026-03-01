@@ -14,6 +14,19 @@
 export { useOfflineFirst, useOfflineMutation } from "./core/use-offline-first"
 export type { OfflineFirstOptions, MutationOptions, UseDataReturn } from "./core/types"
 
+// Hybrid Storage (SSR-safe)
+export {
+  useHybridData,
+  useHybridIdentity,
+  useHybridStats,
+  useHybridSettings,
+  useHybridAreas,
+  useHybridValues,
+  useHybridRoles,
+  useIsHydrated,
+} from "./use-hybrid-data"
+export type { ServerState, HybridDataResult } from "./use-hybrid-data"
+
 // Areas
 export {
   useAreas,
@@ -29,6 +42,17 @@ export {
   useUpdateGoal,
   useDeleteGoal,
 } from "./modules/use-goals"
+
+// Projects
+export {
+  useProjects,
+  useProject,
+  useProjectsByStatus,
+  useCreateProject,
+  useUpdateProject,
+  useDeleteProject,
+  useCompleteProject,
+} from "./modules/use-projects"
 
 // Tasks
 export {

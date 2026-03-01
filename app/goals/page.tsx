@@ -1,8 +1,7 @@
 "use client"
 
 import { AppShell } from "@/components/app-shell"
-import { useGoals, useAreas } from "@/hooks/use-data"
-import { addGoal, updateGoal, deleteGoal, getLevelName } from "@/lib/store"
+import { useGoals, useAreas, useCreateGoal, useUpdateGoal, useDeleteGoal } from "@/hooks/use-data"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,9 +48,12 @@ const PRIORITIES = [
 ]
 
 export default function GoalsPage() {
-  const { data: goals, mutate } = useGoals()
+  const { data: goals } = useGoals()
   const { data: areas } = useAreas()
-  
+  const createGoal = useCreateGoal()
+  const updateGoalFn = useUpdateGoal()
+  const deleteGoalFn = useDeleteGoal()
+
   const [isOpen, setIsOpen] = useState(false)
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
 
@@ -80,14 +82,14 @@ export default function GoalsPage() {
     defaultValues,
     onSubmit: async (data) => {
       if (editingGoal) {
-        updateGoal(editingGoal.id, { 
-          ...data, 
+        updateGoalFn(editingGoal.id, {
+          ...data,
           priority: data.priority as 1 | 2 | 3 | 4 | 5,
-          startedAt: editingGoal.startedAt 
+          startedAt: editingGoal.startedAt
         })
         toast.success("Цель обновлена!")
       } else {
-        addGoal({
+        createGoal({
           ...data,
           priority: data.priority as 1 | 2 | 3 | 4 | 5,
           startedAt: new Date().toISOString(),
@@ -99,7 +101,6 @@ export default function GoalsPage() {
         })
         toast.success("Цель создана!")
       }
-      mutate()
       setIsOpen(false)
       setEditingGoal(null)
       resetForm()
@@ -135,15 +136,13 @@ export default function GoalsPage() {
 
   const handleDelete = (id: string) => {
     if (confirm("Удалить цель?")) {
-      deleteGoal(id)
+      deleteGoalFn(id)
       toast.success("Цель удалена")
-      mutate()
     }
   }
 
   const handleStatusChange = (goal: Goal, newStatus: Goal["status"]) => {
-    updateGoal(goal.id, { status: newStatus })
-    mutate()
+    updateGoalFn(goal.id, { status: newStatus })
     toast.success(`Статус изменен на "${newStatus}"`)
   }
 

@@ -39,11 +39,11 @@ const TIER_STYLES: Record<
     glow: "",
   },
   2: {
-    bg: "from-blue-500 to-blue-700",
-    border: "border-blue-400/50",
-    ring: "ring-blue-400/30",
+    bg: "from-[#8b5cf6] to-[#6d28d9]",
+    border: "border-[#a78bfa]/50",
+    ring: "ring-[#a78bfa]/30",
     icon: Sword,
-    glow: "shadow-blue-500/20",
+    glow: "shadow-[#8b5cf6]/20",
   },
   3: {
     bg: "from-purple-500 to-purple-700",

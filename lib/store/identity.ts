@@ -13,8 +13,9 @@ export function getIdentity(): Identity {
 
 export function updateIdentity(updates: Partial<Identity>) {
   const current = getIdentity()
-  setStore(KEYS.identity, { ...current, ...updates, updatedAt: now() })
-  mutateKey(KEYS.identity)
+  const updated = { ...current, ...updates, updatedAt: now() }
+  setStore(KEYS.identity, updated)
+  mutateKey(KEYS.identity, updated)
 }
 
 // Core Values
@@ -25,21 +26,24 @@ export function getValues(): CoreValue[] {
 export function addValue(value: Omit<CoreValue, "id">) {
   const values = getValues()
   const newValue: CoreValue = { ...value, id: genId() }
-  setStore(KEYS.values, [...values, newValue])
-  mutateKey(KEYS.values)
+  const updatedValues = [...values, newValue]
+  setStore(KEYS.values, updatedValues)
+  mutateKey(KEYS.values, updatedValues)
   return newValue
 }
 
 export function updateValue(id: string, updates: Partial<CoreValue>) {
   const values = getValues()
-  setStore(KEYS.values, values.map(v => v.id === id ? { ...v, ...updates } : v))
-  mutateKey(KEYS.values)
+  const updatedValues = values.map(v => v.id === id ? { ...v, ...updates } : v)
+  setStore(KEYS.values, updatedValues)
+  mutateKey(KEYS.values, updatedValues)
 }
 
 export function deleteValue(id: string) {
   const values = getValues()
-  setStore(KEYS.values, values.filter(v => v.id !== id))
-  mutateKey(KEYS.values)
+  const updatedValues = values.filter(v => v.id !== id)
+  setStore(KEYS.values, updatedValues)
+  mutateKey(KEYS.values, updatedValues)
 }
 
 // Life Areas
@@ -50,21 +54,24 @@ export function getAreas(): LifeArea[] {
 export function addArea(area: Omit<LifeArea, "id">) {
   const areas = getAreas()
   const newArea: LifeArea = { ...area, id: genId() }
-  setStore(KEYS.areas, [...areas, newArea])
-  mutateKey(KEYS.areas)
+  const updatedAreas = [...areas, newArea]
+  setStore(KEYS.areas, updatedAreas)
+  mutateKey(KEYS.areas, updatedAreas)
   return newArea
 }
 
 export function updateArea(id: string, updates: Partial<LifeArea>) {
   const areas = getAreas()
-  setStore(KEYS.areas, areas.map(a => a.id === id ? { ...a, ...updates } : a))
-  mutateKey(KEYS.areas)
+  const updatedAreas = areas.map(a => a.id === id ? { ...a, ...updates } : a)
+  setStore(KEYS.areas, updatedAreas)
+  mutateKey(KEYS.areas, updatedAreas)
 }
 
 export function deleteArea(id: string) {
   const areas = getAreas()
-  setStore(KEYS.areas, areas.filter(a => a.id !== id))
-  mutateKey(KEYS.areas)
+  const updatedAreas = areas.filter(a => a.id !== id)
+  setStore(KEYS.areas, updatedAreas)
+  mutateKey(KEYS.areas, updatedAreas)
 }
 
 // Roles
@@ -75,19 +82,22 @@ export function getRoles(): Role[] {
 export function addRole(role: Omit<Role, "id">) {
   const roles = getRoles()
   const newRole: Role = { ...role, id: genId() }
-  setStore(KEYS.roles, [...roles, newRole])
-  mutateKey(KEYS.roles)
+  const updatedRoles = [...roles, newRole]
+  setStore(KEYS.roles, updatedRoles)
+  mutateKey(KEYS.roles, updatedRoles)
   return newRole
 }
 
 export function updateRole(id: string, updates: Partial<Role>) {
   const roles = getRoles()
-  setStore(KEYS.roles, roles.map(r => r.id === id ? { ...r, ...updates } : r))
-  mutateKey(KEYS.roles)
+  const updatedRoles = roles.map(r => r.id === id ? { ...r, ...updates } : r)
+  setStore(KEYS.roles, updatedRoles)
+  mutateKey(KEYS.roles, updatedRoles)
 }
 
 export function deleteRole(id: string) {
   const roles = getRoles()
-  setStore(KEYS.roles, roles.filter(r => r.id !== id))
-  mutateKey(KEYS.roles)
+  const updatedRoles = roles.filter(r => r.id !== id)
+  setStore(KEYS.roles, updatedRoles)
+  mutateKey(KEYS.roles, updatedRoles)
 }

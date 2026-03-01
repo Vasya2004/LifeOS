@@ -2,9 +2,6 @@
 -- LIFEOS SUPABASE SCHEMA
 -- ============================================
 
--- Enable RLS
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
-
 -- ============================================
 -- PROFILES TABLE
 -- ============================================
@@ -22,14 +19,17 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- Profiles policies
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile"
     ON public.profiles FOR SELECT
     USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile"
     ON public.profiles FOR UPDATE
     USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 CREATE POLICY "Users can insert own profile"
     ON public.profiles FOR INSERT
     WITH CHECK (auth.uid() = id);
@@ -51,18 +51,22 @@ CREATE TABLE IF NOT EXISTS public.user_data (
 ALTER TABLE public.user_data ENABLE ROW LEVEL SECURITY;
 
 -- User data policies
+DROP POLICY IF EXISTS "Users can view own data" ON public.user_data;
 CREATE POLICY "Users can view own data"
     ON public.user_data FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own data" ON public.user_data;
 CREATE POLICY "Users can update own data"
     ON public.user_data FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own data" ON public.user_data;
 CREATE POLICY "Users can insert own data"
     ON public.user_data FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own data" ON public.user_data;
 CREATE POLICY "Users can delete own data"
     ON public.user_data FOR DELETE
     USING (auth.uid() = user_id);
@@ -83,10 +87,12 @@ CREATE TABLE IF NOT EXISTS public.sync_log (
 -- Enable RLS
 ALTER TABLE public.sync_log ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own sync logs" ON public.sync_log;
 CREATE POLICY "Users can view own sync logs"
     ON public.sync_log FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own sync logs" ON public.sync_log;
 CREATE POLICY "Users can insert own sync logs"
     ON public.sync_log FOR INSERT
     WITH CHECK (auth.uid() = user_id);
@@ -104,12 +110,14 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Apply updated_at triggers
+-- Apply updated_at triggers (idempotent)
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
 CREATE TRIGGER update_profiles_updated_at
     BEFORE UPDATE ON public.profiles
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_user_data_updated_at ON public.user_data;
 CREATE TRIGGER update_user_data_updated_at
     BEFORE UPDATE ON public.user_data
     FOR EACH ROW
@@ -121,17 +129,20 @@ RETURNS TRIGGER AS $$
 BEGIN
     -- Create profile
     INSERT INTO public.profiles (id, name)
-    VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'name', 'Игрок 1'));
-    
+    VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'name', 'Игрок 1'))
+    ON CONFLICT (id) DO NOTHING;
+
     -- Create empty user_data
     INSERT INTO public.user_data (user_id, data, version)
-    VALUES (NEW.id, '{}', '1.0.0');
-    
+    VALUES (NEW.id, '{}', '1.0.0')
+    ON CONFLICT (user_id) DO NOTHING;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger for new user
+-- Trigger for new user (idempotent)
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW
@@ -149,20 +160,23 @@ CREATE INDEX IF NOT EXISTS idx_sync_log_timestamp ON public.sync_log(server_time
 -- STORAGE BUCKET (for file uploads)
 -- ============================================
 
--- Create bucket for medical documents and avatars
+-- Create bucket for avatars and files
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('user-files', 'user-files', false)
 ON CONFLICT (id) DO NOTHING;
 
 -- Storage policies
+DROP POLICY IF EXISTS "Users can upload own files" ON storage.objects;
 CREATE POLICY "Users can upload own files"
     ON storage.objects FOR INSERT
     WITH CHECK (auth.uid()::text = (storage.foldername(name))[1]);
 
+DROP POLICY IF EXISTS "Users can view own files" ON storage.objects;
 CREATE POLICY "Users can view own files"
     ON storage.objects FOR SELECT
     USING (auth.uid()::text = (storage.foldername(name))[1]);
 
+DROP POLICY IF EXISTS "Users can delete own files" ON storage.objects;
 CREATE POLICY "Users can delete own files"
     ON storage.objects FOR DELETE
     USING (auth.uid()::text = (storage.foldername(name))[1]);

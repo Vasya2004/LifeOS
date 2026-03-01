@@ -28,29 +28,34 @@ CREATE TABLE IF NOT EXISTS public.habits (
 
 ALTER TABLE public.habits ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own habits" ON public.habits;
 CREATE POLICY "Users can view own habits"
     ON public.habits FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create own habits" ON public.habits;
 CREATE POLICY "Users can create own habits"
     ON public.habits FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own habits" ON public.habits;
 CREATE POLICY "Users can update own habits"
     ON public.habits FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own habits" ON public.habits;
 CREATE POLICY "Users can delete own habits"
     ON public.habits FOR DELETE
     USING (auth.uid() = user_id);
 
+DROP TRIGGER IF EXISTS update_habits_updated_at ON public.habits;
 CREATE TRIGGER update_habits_updated_at
     BEFORE UPDATE ON public.habits
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE INDEX idx_habits_user_id ON public.habits(user_id);
-CREATE INDEX idx_habits_area_id ON public.habits(area_id);
+CREATE INDEX IF NOT EXISTS idx_habits_user_id ON public.habits(user_id);
+CREATE INDEX IF NOT EXISTS idx_habits_area_id ON public.habits(area_id);
 
 -- ============================================
 -- SKILLS TABLE
@@ -78,29 +83,34 @@ CREATE TABLE IF NOT EXISTS public.skills (
 
 ALTER TABLE public.skills ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own skills" ON public.skills;
 CREATE POLICY "Users can view own skills"
     ON public.skills FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create own skills" ON public.skills;
 CREATE POLICY "Users can create own skills"
     ON public.skills FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own skills" ON public.skills;
 CREATE POLICY "Users can update own skills"
     ON public.skills FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own skills" ON public.skills;
 CREATE POLICY "Users can delete own skills"
     ON public.skills FOR DELETE
     USING (auth.uid() = user_id);
 
+DROP TRIGGER IF EXISTS update_skills_updated_at ON public.skills;
 CREATE TRIGGER update_skills_updated_at
     BEFORE UPDATE ON public.skills
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE INDEX idx_skills_user_id ON public.skills(user_id);
-CREATE INDEX idx_skills_category ON public.skills(category);
+CREATE INDEX IF NOT EXISTS idx_skills_user_id ON public.skills(user_id);
+CREATE INDEX IF NOT EXISTS idx_skills_category ON public.skills(category);
 
 -- ============================================
 -- FINANCE - ACCOUNTS TABLE
@@ -121,28 +131,33 @@ CREATE TABLE IF NOT EXISTS public.accounts (
 
 ALTER TABLE public.accounts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own accounts" ON public.accounts;
 CREATE POLICY "Users can view own accounts"
     ON public.accounts FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create own accounts" ON public.accounts;
 CREATE POLICY "Users can create own accounts"
     ON public.accounts FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own accounts" ON public.accounts;
 CREATE POLICY "Users can update own accounts"
     ON public.accounts FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own accounts" ON public.accounts;
 CREATE POLICY "Users can delete own accounts"
     ON public.accounts FOR DELETE
     USING (auth.uid() = user_id);
 
+DROP TRIGGER IF EXISTS update_accounts_updated_at ON public.accounts;
 CREATE TRIGGER update_accounts_updated_at
     BEFORE UPDATE ON public.accounts
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE INDEX idx_accounts_user_id ON public.accounts(user_id);
+CREATE INDEX IF NOT EXISTS idx_accounts_user_id ON public.accounts(user_id);
 
 -- ============================================
 -- FINANCE - TRANSACTIONS TABLE
@@ -162,21 +177,24 @@ CREATE TABLE IF NOT EXISTS public.transactions (
 
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own transactions" ON public.transactions;
 CREATE POLICY "Users can view own transactions"
     ON public.transactions FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create own transactions" ON public.transactions;
 CREATE POLICY "Users can create own transactions"
     ON public.transactions FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own transactions" ON public.transactions;
 CREATE POLICY "Users can delete own transactions"
     ON public.transactions FOR DELETE
     USING (auth.uid() = user_id);
 
-CREATE INDEX idx_transactions_user_id ON public.transactions(user_id);
-CREATE INDEX idx_transactions_account_id ON public.transactions(account_id);
-CREATE INDEX idx_transactions_date ON public.transactions(transaction_date DESC);
+CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON public.transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_account_id ON public.transactions(account_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_date ON public.transactions(transaction_date DESC);
 
 -- ============================================
 -- FINANCE - FINANCIAL GOALS TABLE
@@ -198,28 +216,33 @@ CREATE TABLE IF NOT EXISTS public.financial_goals (
 
 ALTER TABLE public.financial_goals ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own financial goals" ON public.financial_goals;
 CREATE POLICY "Users can view own financial goals"
     ON public.financial_goals FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create own financial goals" ON public.financial_goals;
 CREATE POLICY "Users can create own financial goals"
     ON public.financial_goals FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own financial goals" ON public.financial_goals;
 CREATE POLICY "Users can update own financial goals"
     ON public.financial_goals FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own financial goals" ON public.financial_goals;
 CREATE POLICY "Users can delete own financial goals"
     ON public.financial_goals FOR DELETE
     USING (auth.uid() = user_id);
 
+DROP TRIGGER IF EXISTS update_financial_goals_updated_at ON public.financial_goals;
 CREATE TRIGGER update_financial_goals_updated_at
     BEFORE UPDATE ON public.financial_goals
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE INDEX idx_financial_goals_user_id ON public.financial_goals(user_id);
+CREATE INDEX IF NOT EXISTS idx_financial_goals_user_id ON public.financial_goals(user_id);
 
 -- ============================================
 -- FINANCE - BUDGETS TABLE
@@ -238,25 +261,30 @@ CREATE TABLE IF NOT EXISTS public.budgets (
 
 ALTER TABLE public.budgets ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own budgets" ON public.budgets;
 CREATE POLICY "Users can view own budgets"
     ON public.budgets FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create own budgets" ON public.budgets;
 CREATE POLICY "Users can create own budgets"
     ON public.budgets FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own budgets" ON public.budgets;
 CREATE POLICY "Users can update own budgets"
     ON public.budgets FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own budgets" ON public.budgets;
 CREATE POLICY "Users can delete own budgets"
     ON public.budgets FOR DELETE
     USING (auth.uid() = user_id);
 
+DROP TRIGGER IF EXISTS update_budgets_updated_at ON public.budgets;
 CREATE TRIGGER update_budgets_updated_at
     BEFORE UPDATE ON public.budgets
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE INDEX idx_budgets_user_id ON public.budgets(user_id);
+CREATE INDEX IF NOT EXISTS idx_budgets_user_id ON public.budgets(user_id);

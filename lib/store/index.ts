@@ -1,151 +1,212 @@
 // ============================================
 // STORE MODULE - Main Export
 // ============================================
-// 
-// This module has been refactored from a single 1277-line file
-// into a modular architecture organized by domain.
 //
-// Structure:
-// - core.ts: Storage utilities, KEYS, mutateKey
-// - defaults.ts: Default values and game constants
-// - gamification.ts: XP, coins, levels, streaks
-// - identity.ts: Identity, values, areas, roles
-// - goals.ts: Goals and projects
-// - tasks.ts: Tasks management
-// - habits.ts: Habits and streaks
-// - reflection.ts: Daily reviews and journal
-// - wishes.ts: Wishlist system
-// - finance.ts: Accounts, transactions, budgets
-// - health.ts: Body zones, metrics, documents
-// - skills.ts: RPG skill system
-// - backup.ts: Export/import functionality
+// Новая модульная архитектура store.
+// Каждая feature имеет свою директорию с чёткими границами.
+//
+// Структура:
+// - core/        # Низкоуровневые операции (storage, keys, utils, swr)
+// - features/    # Feature-based модули
+// - sync/        # Синхронизация (отдельно)
 //
 // ============================================
 
-// Core utilities
-export { 
+// ============================================
+// CORE - Низкоуровневые операции
+// ============================================
+
+export {
+  // Storage
+  getStore,
+  setStore,
+  removeStore,
+  hasStore,
+  getStoreKeys,
+  clearStore,
   STORAGE_PREFIX,
-  getStore, 
-  setStore, 
-  KEYS, 
-  mutateKey, 
-  genId, 
-  now, 
-  today 
+  // Keys
+  KEYS,
+  isValidKey,
+  // Utils
+  genId,
+  now,
+  today,
+  yesterday,
+  addDays,
+  daysBetween,
+  formatDate,
+  isToday,
+  isYesterday,
+  // SWR
+  mutateKey,
+  mutateKeys,
+  optimisticUpdate,
+  getSwrKey,
 } from "./core"
 
-// Default values
-export { 
-  defaultIdentity, 
-  defaultStats, 
-  defaultSettings,
+export type { StoreKey } from "./core"
+
+// ============================================
+// FEATURES - Модули по доменам
+// ============================================
+
+// -------- GAMIFICATION --------
+export {
+  // Config
   DIFFICULTY_XP,
   DIFFICULTY_COINS,
-  PRIORITY_XP
-} from "./defaults"
-
-// Gamification
-export {
+  PRIORITY_XP,
+  BASE_XP_TO_NEXT,
+  LEVEL_UP_MULTIPLIER,
+  LEVEL_TITLES,
+  LEVEL_COLORS,
+  getLevelConfig,
+  calculateXpToNext,
+  calculateTotalXpForLevel,
+  getLevelName,
+  calculateLevelProgress,
+  // Store
   getStats,
+  getGamificationState,
   updateStats,
+  setStats,
+  resetStats,
+  // Logic
   addXp,
   addCoins,
   spendCoins,
   checkAndUpdateStreak,
-  getLevelName,
-} from "./gamification"
+  isActiveToday,
+  getStreakGracePeriod,
+  calculateStreakBonus,
+  // Hooks
+  useStats,
+  useXp,
+  useCoins,
+  useStreak,
+  useGamification,
+} from "./features/gamification"
 
-// Identity & Foundation
+export type {
+  CoinsOperationResult,
+  ActionRewards,
+  LevelConfig,
+  GamificationEvent,
+  GamificationState,
+} from "./features/gamification"
+
+// -------- TASKS --------
 export {
-  getIdentity,
-  updateIdentity,
-  getValues,
-  addValue,
-  updateValue,
-  deleteValue,
-  getAreas,
-  addArea,
-  updateArea,
-  deleteArea,
-  getRoles,
-  addRole,
-  updateRole,
-  deleteRole,
-} from "./identity"
+  // Store (CRUD)
+  getTasks,
+  getTaskById,
+  createTask,
+  updateTask,
+  completeTask,
+  uncompleteTask,
+  deleteTask,
+  deleteTasks,
+  updateTasks,
+  // Queries
+  getTodaysTasks,
+  getTasksByDate,
+  getTomorrowsTasks,
+  getThisWeekTasks,
+  getOverdueTasks,
+  getUpcomingTasks,
+  getCompletedTasks,
+  getActiveTasks,
+  getInProgressTasks,
+  getCancelledTasks,
+  getTasksByProject,
+  filterTasks,
+  sortTasks,
+  groupTasks,
+  getTasksStats,
+  // Hooks
+  useTasks,
+  useFilteredTasks,
+  useTodaysTasks,
+  useActiveTasks,
+  useTasksStats,
+  useTask,
+  useTaskManager,
+} from "./features/tasks"
 
-// Goals & Projects
+export type {
+  TaskFilters,
+  TaskSort,
+  TaskSortBy,
+  TaskSortOrder,
+  TaskOperationResult,
+  TasksStats,
+  TaskGroupBy,
+  GroupedTasks,
+} from "./features/tasks"
+
+// -------- GOALS --------
 export {
   getGoals,
-  addGoal,
+  getGoalById,
+  createGoal,
   updateGoal,
   deleteGoal,
+  completeGoal,
+  getGoalsByArea,
+  getGoalsByStatus,
   getProjects,
-  addProject,
+  getProjectById,
+  createProject,
   updateProject,
   deleteProject,
   completeProject,
-} from "./goals"
+  getProjectsByGoal,
+  getProjectsByStatus,
+  getActiveProjects,
+} from "./features/goals"
 
-// Tasks
-export {
-  getTasks,
-  getTaskById,
-  addTask,
-  completeTask,
-  updateTask,
-  deleteTask,
-  getTodaysTasks,
-  getTasksByDate,
-  getTasksByProject,
-  getCompletedTasks,
-  getPendingTasks,
-} from "./tasks"
-
-// Habits
+// -------- HABITS --------
 export {
   getHabits,
   getHabitById,
-  addHabit,
-  toggleHabitEntry,
+  createHabit,
   updateHabit,
   deleteHabit,
+  toggleHabitEntry,
   calculateStreak,
   getHabitsByArea,
   getHabitsForDate,
-} from "./habits"
+  getTodaysHabits,
+  getActiveHabits,
+  getHabitsStats,
+} from "./features/habits"
 
-// Reflection
+// -------- IDENTITY --------
 export {
-  getDailyReviews,
-  getDailyReview,
-  saveDailyReview,
-  deleteDailyReview,
-  getWeeklyReviews,
-  getWeeklyReview,
-  saveWeeklyReview,
-  getJournal,
-  getJournalEntryById,
-  addJournalEntry,
-  updateJournalEntry,
-  deleteJournalEntry,
-  getJournalEntriesByGoal,
-  getJournalEntriesByType,
-} from "./reflection"
+  getIdentity,
+  updateIdentity,
+  completeOnboarding,
+  getValues,
+  getValueById,
+  createValue,
+  updateValue,
+  deleteValue,
+  getAreas,
+  getAreaById,
+  createArea,
+  updateArea,
+  deleteArea,
+  getActiveAreas,
+  getRoles,
+  getRoleById,
+  createRole,
+  updateRole,
+  deleteRole,
+  getRolesByArea,
+} from "./features/identity"
 
-// Wishes
-export {
-  getWishes,
-  getWishById,
-  addWish,
-  updateWish,
-  deleteWish,
-  contributeToWish,
-  purchaseWish,
-  getWishesByStatus,
-  getActiveWishes,
-} from "./wishes"
-
-// Finance
+// -------- FINANCE --------
 export {
   getAccounts,
   getAccountById,
@@ -171,9 +232,11 @@ export {
   deleteBudget,
   getFinancialStats,
   getExpensesByCategory,
-} from "./finance"
+} from "./features/finance"
 
-// Health
+export type { ContributeGoalResult } from "./features/finance"
+
+// -------- HEALTH --------
 export {
   getBodyZones,
   getBodyZoneById,
@@ -196,9 +259,9 @@ export {
   updateHealthProfile,
   addMedication,
   removeMedication,
-} from "./health"
+} from "./features/health"
 
-// Skills
+// -------- SKILLS --------
 export {
   getSkills,
   getSkillById,
@@ -215,13 +278,90 @@ export {
   getTopSkills,
   getRecentlyActiveSkills,
   getSkillsNeedingAttention,
-} from "./skills"
+} from "./features/skills"
 
-// Backup
+export type { AddActivityResult } from "./features/skills"
+
+// -------- REFLECTION --------
+export {
+  getDailyReviews,
+  getDailyReview,
+  saveDailyReview,
+  deleteDailyReview,
+  getWeeklyReviews,
+  getWeeklyReview,
+  saveWeeklyReview,
+  getJournal,
+  getJournalEntryById,
+  addJournalEntry,
+  updateJournalEntry,
+  deleteJournalEntry,
+  getJournalEntriesByGoal,
+  getJournalEntriesByType,
+} from "./features/reflection"
+
+// -------- WISHES --------
+export {
+  getWishes,
+  getWishById,
+  addWish,
+  updateWish,
+  deleteWish,
+  contributeToWish,
+  purchaseWish,
+  getWishesByStatus,
+  getActiveWishes,
+  getWishesStats,
+} from "./features/wishes"
+
+export type { ContributeResult, PurchaseResult } from "./features/wishes"
+
+// -------- BACKUP --------
 export {
   exportAllData,
-  importAllData,
-  clearAllData,
   downloadBackup,
+  importAllData,
   loadBackupFromFile,
-} from "./backup"
+  clearAllData,
+} from "./features/backup"
+
+export type { ImportResult } from "./features/backup"
+
+// ============================================
+// DEFAULTS
+// ============================================
+
+export { defaultIdentity, defaultStats, defaultSettings } from "./defaults"
+
+// ============================================
+// BACKWARD COMPATIBILITY ALIASES
+// ============================================
+
+// Goals
+export { createGoal as addGoal } from "./features/goals"
+
+// Habits  
+export { createHabit as addHabit } from "./features/habits"
+
+// Identity
+export { createArea as addArea } from "./features/identity"
+export { createValue as addValue } from "./features/identity"
+export { createRole as addRole } from "./features/identity"
+
+// Tasks
+export { createTask as addTask } from "./features/tasks"
+
+// ============================================
+// MIGRATION GUIDE
+// ============================================
+//
+// Старые пути → Новые пути:
+//
+// import { getGoals } from "@/lib/store/goals"
+// → import { getGoals } from "@/lib/store/features/goals"
+//
+// import { getHabits } from "@/lib/store/habits"  
+// → import { getHabits } from "@/lib/store/features/habits"
+//
+// Все функции доступны и через главный index.ts:
+// import { getGoals, getHabits } from "@/lib/store"

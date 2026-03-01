@@ -106,7 +106,7 @@ export function SkillCard({ skill, compact = false }: SkillCardProps) {
     const colorMap: Record<string, string> = {
       'text-gray-400': '#9ca3af',
       'text-green-500': '#22c55e',
-      'text-blue-500': '#3b82f6',
+      'text-[#8b5cf6]': '#8b5cf6',
       'text-purple-500': '#a855f7',
       'text-orange-500': '#f97316',
       'text-red-500': '#ef4444',

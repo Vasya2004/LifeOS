@@ -7,7 +7,7 @@
 import { useOfflineFirst } from "@/hooks/core/use-offline-first"
 import * as localStore from "@/lib/store"
 import * as db from "@/lib/api/database"
-import { syncToServer } from "@/lib/sync/offline-first"
+import { addToQueue } from "@/lib/sync/offline-first"
 import { setStore } from "@/lib/store/utils/storage"
 import { useAuth } from "@/lib/auth/context"
 import type { Skill, SkillActivity } from "@/lib/types"
@@ -15,12 +15,12 @@ import type { Skill, SkillActivity } from "@/lib/types"
 const SKILLS_KEY = "skills"
 
 export function useSkills() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return useOfflineFirst<Skill[]>(SKILLS_KEY, {
     storageKey: SKILLS_KEY,
     getLocal: localStore.getSkills,
-    getServer: isAuthenticated ? db.getSkills : undefined,
+    getServer: isAuthenticated && !isGuest ? db.getSkills : undefined,
     setLocal: (data) => setStore(SKILLS_KEY, data),
   })
 }
@@ -35,13 +35,13 @@ export function useSkill(skillId: string) {
 }
 
 export function useCreateSkill() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (skill: Omit<Skill, "id" | "userId" | "currentLevel" | "currentXp" | "xpNeeded" | "totalXpEarned" | "lastActivityDate" | "isDecaying" | "activities" | "certificates" | "decayLogs" | "createdAt" | "updatedAt">) => {
     const newSkill = localStore.addSkill(skill)
 
-    if (isAuthenticated) {
-      await syncToServer("insert", "skills", newSkill, () => { })
+    if (isAuthenticated && !isGuest) {
+      addToQueue({ table: "skills", operation: "insert", recordId: newSkill.id, data: newSkill as unknown as Record<string, unknown> })
     }
 
     return newSkill
@@ -49,26 +49,26 @@ export function useCreateSkill() {
 }
 
 export function useUpdateSkill() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (id: string, updates: Partial<Skill>) => {
     localStore.updateSkill(id, updates)
 
-    if (isAuthenticated) {
+    if (isAuthenticated && !isGuest) {
       const updated = { ...localStore.getSkills().find(s => s.id === id), ...updates, id }
-      await syncToServer("update", "skills", updated, () => { })
+      addToQueue({ table: "skills", operation: "update", recordId: updated.id as string, data: updated as unknown as Record<string, unknown> })
     }
   }
 }
 
 export function useDeleteSkill() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (id: string) => {
     localStore.deleteSkill(id)
 
-    if (isAuthenticated) {
-      await syncToServer("delete", "skills", id, () => { })
+    if (isAuthenticated && !isGuest) {
+      addToQueue({ table: "skills", operation: "delete", recordId: id })
     }
   }
 }

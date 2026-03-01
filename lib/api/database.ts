@@ -3,9 +3,10 @@
 // ============================================
 
 import { createClient } from "@/lib/supabase/client"
-import type { 
+import type {
   LifeArea, Goal, Task, Habit, Skill, UserStats,
-  Account, Transaction, BodyZone, CoreValue 
+  Account, Transaction, FinancialGoal, Budget, BodyZone, CoreValue,
+  HealthMetricEntry, HealthProfile, MedicalDocument, Project
 } from "@/lib/types"
 
 const supabase = createClient()
@@ -497,6 +498,467 @@ export async function updateUserStats(updates: Partial<UserStats>): Promise<User
 }
 
 // ============================================
+// FINANCE - ACCOUNTS
+// ============================================
+
+export async function getAccounts(): Promise<Account[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from("accounts")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("is_active", true)
+    .order("created_at", { ascending: true })
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return (data || []).map(dbToAccount)
+}
+
+export async function createAccount(account: Omit<Account, "id" | "userId" | "createdAt" | "updatedAt">): Promise<Account> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("accounts")
+    .insert(accountToDb(account, user.id))
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToAccount(data)
+}
+
+export async function updateAccount(id: string, updates: Partial<Account>): Promise<Account> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("accounts")
+    .update(accountToDb(updates, user.id))
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToAccount(data)
+}
+
+export async function deleteAccount(id: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { error } = await supabase
+    .from("accounts")
+    .update({ is_active: false })
+    .eq("id", id)
+    .eq("user_id", user.id)
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+}
+
+// ============================================
+// FINANCE - TRANSACTIONS
+// ============================================
+
+export async function getTransactions(): Promise<Transaction[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("transaction_date", { ascending: false })
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return (data || []).map(dbToTransaction)
+}
+
+export async function createTransaction(transaction: Omit<Transaction, "id" | "userId" | "createdAt">): Promise<Transaction> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .insert(transactionToDb(transaction, user.id))
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToTransaction(data)
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { error } = await supabase
+    .from("transactions")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id)
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+}
+
+// ============================================
+// FINANCE - FINANCIAL GOALS
+// ============================================
+
+export async function getFinancialGoals(): Promise<FinancialGoal[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from("financial_goals")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return (data || []).map(dbToFinancialGoal)
+}
+
+export async function createFinancialGoal(goal: Omit<FinancialGoal, "id" | "userId" | "currentAmount" | "isCompleted" | "completedAt" | "createdAt" | "updatedAt">): Promise<FinancialGoal> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("financial_goals")
+    .insert(financialGoalToDb(goal, user.id))
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToFinancialGoal(data)
+}
+
+export async function updateFinancialGoal(id: string, updates: Partial<FinancialGoal>): Promise<FinancialGoal> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("financial_goals")
+    .update(financialGoalToDb(updates, user.id))
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToFinancialGoal(data)
+}
+
+export async function deleteFinancialGoal(id: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { error } = await supabase
+    .from("financial_goals")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id)
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+}
+
+// ============================================
+// FINANCE - BUDGETS
+// ============================================
+
+export async function getBudgets(): Promise<Budget[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from("budgets")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("is_active", true)
+    .order("created_at", { ascending: true })
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return (data || []).map(dbToBudget)
+}
+
+export async function createBudget(budget: Omit<Budget, "id" | "userId">): Promise<Budget> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("budgets")
+    .insert(budgetToDb(budget, user.id))
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToBudget(data)
+}
+
+export async function updateBudget(id: string, updates: Partial<Budget>): Promise<Budget> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("budgets")
+    .update(budgetToDb(updates, user.id))
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToBudget(data)
+}
+
+export async function deleteBudget(id: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { error } = await supabase
+    .from("budgets")
+    .update({ is_active: false })
+    .eq("id", id)
+    .eq("user_id", user.id)
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+}
+
+// ============================================
+// HEALTH - BODY ZONES
+// ============================================
+
+export async function getBodyZones(): Promise<BodyZone[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from("body_zones")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("name", { ascending: true })
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return (data || []).map(dbToBodyZone)
+}
+
+export async function upsertBodyZone(zone: Omit<BodyZone, "id">): Promise<BodyZone> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("body_zones")
+    .upsert(bodyZoneToDb(zone, user.id), { onConflict: "user_id,name" })
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToBodyZone(data)
+}
+
+export async function updateBodyZone(id: string, updates: Partial<BodyZone>): Promise<BodyZone> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("body_zones")
+    .update(bodyZoneToDb(updates, user.id))
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToBodyZone(data)
+}
+
+// ============================================
+// HEALTH - METRICS
+// ============================================
+
+export async function getHealthMetrics(): Promise<HealthMetricEntry[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from("health_metrics")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("date", { ascending: false })
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return (data || []).map(dbToHealthMetric)
+}
+
+export async function createHealthMetric(metric: Omit<HealthMetricEntry, "id">): Promise<HealthMetricEntry> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("health_metrics")
+    .insert(healthMetricToDb(metric, user.id))
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToHealthMetric(data)
+}
+
+export async function deleteHealthMetric(id: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { error } = await supabase
+    .from("health_metrics")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id)
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+}
+
+// ============================================
+// HEALTH - MEDICAL DOCUMENTS
+// ============================================
+
+export async function getMedicalDocuments(): Promise<MedicalDocument[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from("medical_documents")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("date", { ascending: false })
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return (data || []).map(dbToMedicalDocument)
+}
+
+export async function createMedicalDocument(doc: Omit<MedicalDocument, "id" | "createdAt">): Promise<MedicalDocument> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("medical_documents")
+    .insert(medicalDocumentToDb(doc, user.id))
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToMedicalDocument(data)
+}
+
+export async function deleteMedicalDocument(id: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { error } = await supabase
+    .from("medical_documents")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id)
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+}
+
+// ============================================
+// HEALTH - PROFILE
+// ============================================
+
+export async function getHealthProfile(): Promise<HealthProfile | null> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data, error } = await supabase
+    .from("health_profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .single()
+
+  if (error && error.code !== "PGRST116") throw new DatabaseError(error.message, error.code, error)
+  return data ? dbToHealthProfile(data) : null
+}
+
+export async function upsertHealthProfile(updates: Partial<HealthProfile>): Promise<HealthProfile> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("health_profiles")
+    .upsert({ ...healthProfileToDb(updates, user.id), user_id: user.id }, { onConflict: "user_id" })
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToHealthProfile(data)
+}
+
+// ============================================
+// PROJECTS
+// ============================================
+
+export async function getProjects(): Promise<Project[]> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return (data || []).map(dbToProject)
+}
+
+export async function createProject(project: Omit<Project, "id" | "createdAt" | "updatedAt">): Promise<Project> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("projects")
+    .insert(projectToDb(project, user.id))
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToProject(data)
+}
+
+export async function updateProject(id: string, updates: Partial<Project>): Promise<Project> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { data, error } = await supabase
+    .from("projects")
+    .update(projectToDb(updates, user.id))
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single()
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+  return dbToProject(data)
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new DatabaseError("Not authenticated")
+
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id)
+
+  if (error) throw new DatabaseError(error.message, error.code, error)
+}
+
+// ============================================
 // REALTIME SUBSCRIPTIONS
 // ============================================
 
@@ -767,5 +1229,269 @@ function statsToDb(stats: Partial<UserStats>): any {
     total_deep_work_hours: stats.totalDeepWorkHours,
     total_focus_sessions: stats.totalFocusSessions,
     avg_daily_tasks: stats.avgDailyTasks,
+  }
+}
+
+// ============================================
+// FINANCE MAPPERS
+// ============================================
+
+function dbToAccount(db: any): Account {
+  return {
+    id: db.id,
+    userId: db.user_id,
+    name: db.name,
+    type: db.type,
+    balance: db.balance,
+    currency: db.currency,
+    color: db.color,
+    icon: db.icon,
+    isActive: db.is_active,
+    createdAt: db.created_at,
+    updatedAt: db.updated_at,
+  }
+}
+
+function accountToDb(account: Partial<Account>, userId: string): any {
+  return {
+    user_id: userId,
+    name: account.name,
+    type: account.type,
+    balance: account.balance,
+    currency: account.currency,
+    color: account.color,
+    icon: account.icon,
+    is_active: account.isActive,
+  }
+}
+
+function dbToTransaction(db: any): Transaction {
+  return {
+    id: db.id,
+    userId: db.user_id,
+    accountId: db.account_id,
+    type: db.type,
+    amount: Number(db.amount),
+    category: db.category,
+    description: db.description,
+    transactionDate: db.transaction_date,
+    relatedGoalId: db.related_goal_id,
+    createdAt: db.created_at,
+  }
+}
+
+function transactionToDb(t: Partial<Transaction>, userId: string): any {
+  return {
+    user_id: userId,
+    account_id: t.accountId,
+    type: t.type,
+    amount: t.amount,
+    category: t.category,
+    description: t.description,
+    transaction_date: t.transactionDate,
+    related_goal_id: t.relatedGoalId,
+  }
+}
+
+function dbToFinancialGoal(db: any): FinancialGoal {
+  return {
+    id: db.id,
+    userId: db.user_id,
+    title: db.title,
+    description: db.description,
+    targetAmount: Number(db.target_amount),
+    currentAmount: Number(db.current_amount),
+    deadline: db.deadline,
+    category: db.category,
+    isCompleted: db.is_completed,
+    completedAt: db.completed_at,
+    createdAt: db.created_at,
+    updatedAt: db.updated_at,
+  }
+}
+
+function financialGoalToDb(g: Partial<FinancialGoal>, userId: string): any {
+  return {
+    user_id: userId,
+    title: g.title,
+    description: g.description,
+    target_amount: g.targetAmount,
+    current_amount: g.currentAmount,
+    deadline: g.deadline,
+    category: g.category,
+    is_completed: g.isCompleted,
+    completed_at: g.completedAt,
+  }
+}
+
+function dbToBudget(db: any): Budget {
+  return {
+    id: db.id,
+    userId: db.user_id,
+    category: db.category,
+    limit: Number(db.limit_amount),
+    period: db.period,
+    startDate: db.start_date,
+    isActive: db.is_active,
+  }
+}
+
+function budgetToDb(b: Partial<Budget>, userId: string): any {
+  return {
+    user_id: userId,
+    category: b.category,
+    limit_amount: b.limit,
+    period: b.period,
+    start_date: b.startDate,
+    is_active: b.isActive,
+  }
+}
+
+// ============================================
+// HEALTH MAPPERS
+// ============================================
+
+function dbToBodyZone(db: any): BodyZone {
+  return {
+    id: db.id,
+    name: db.name,
+    displayName: db.display_name,
+    icon: db.icon,
+    status: db.status,
+    notes: db.notes || "",
+    lastCheckup: db.last_checkup,
+    position: { x: Number(db.position_x || 50), y: Number(db.position_y || 50) },
+  }
+}
+
+function bodyZoneToDb(z: Partial<BodyZone>, userId: string): any {
+  return {
+    user_id: userId,
+    name: z.name,
+    display_name: z.displayName,
+    icon: z.icon,
+    status: z.status,
+    notes: z.notes,
+    last_checkup: z.lastCheckup,
+    position_x: z.position?.x,
+    position_y: z.position?.y,
+  }
+}
+
+function dbToHealthMetric(db: any): HealthMetricEntry {
+  return {
+    id: db.id,
+    date: db.date,
+    type: db.type,
+    value: Number(db.value),
+    unit: db.unit,
+    notes: db.notes,
+    time: db.time,
+  }
+}
+
+function healthMetricToDb(m: Partial<HealthMetricEntry>, userId: string): any {
+  return {
+    user_id: userId,
+    date: m.date,
+    type: m.type,
+    value: m.value,
+    unit: m.unit,
+    notes: m.notes,
+    time: m.time,
+  }
+}
+
+function dbToMedicalDocument(db: any): MedicalDocument {
+  return {
+    id: db.id,
+    title: db.title,
+    fileUrl: db.file_url,
+    fileType: db.file_type,
+    documentType: db.document_type,
+    date: db.date,
+    summary: db.summary,
+    tags: db.tags || [],
+    doctorName: db.doctor_name,
+    clinic: db.clinic,
+    createdAt: db.created_at,
+  }
+}
+
+function medicalDocumentToDb(d: Partial<MedicalDocument>, userId: string): any {
+  return {
+    user_id: userId,
+    title: d.title,
+    file_url: d.fileUrl,
+    file_type: d.fileType,
+    document_type: d.documentType,
+    date: d.date,
+    summary: d.summary,
+    tags: d.tags,
+    doctor_name: d.doctorName,
+    clinic: d.clinic,
+  }
+}
+
+function dbToHealthProfile(db: any): HealthProfile {
+  return {
+    bloodType: db.blood_type,
+    allergies: db.allergies || [],
+    chronicConditions: db.chronic_conditions || [],
+    medications: db.medications || [],
+    emergencyContact: db.emergency_contact,
+  }
+}
+
+function healthProfileToDb(p: Partial<HealthProfile>, userId: string): any {
+  return {
+    user_id: userId,
+    blood_type: p.bloodType,
+    allergies: p.allergies,
+    chronic_conditions: p.chronicConditions,
+    medications: p.medications,
+    emergency_contact: p.emergencyContact,
+  }
+}
+
+// ============================================
+// PROJECTS MAPPERS
+// ============================================
+
+function dbToProject(db: any): Project {
+  return {
+    id: db.id,
+    title: db.title,
+    description: db.description,
+    status: db.status,
+    priority: db.priority,
+    color: db.color,
+    icon: db.icon,
+    goalId: db.goal_id,
+    areaId: db.area_id,
+    startedAt: db.started_at,
+    deadline: db.deadline,
+    completedAt: db.completed_at,
+    xpAwarded: db.xp_awarded,
+    createdAt: db.created_at,
+    updatedAt: db.updated_at,
+  }
+}
+
+function projectToDb(p: Partial<Project>, userId: string): any {
+  return {
+    user_id: userId,
+    title: p.title,
+    description: p.description,
+    status: p.status,
+    priority: p.priority,
+    color: p.color,
+    icon: p.icon,
+    goal_id: p.goalId,
+    area_id: p.areaId,
+    started_at: p.startedAt,
+    deadline: p.deadline,
+    completed_at: p.completedAt,
+    xp_awarded: p.xpAwarded,
   }
 }

@@ -13,7 +13,7 @@ export const createSkillSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(1000).default(""),
   icon: z.string().min(1).max(50),
-  color: colorSchema.default("#3b82f6"),
+  color: colorSchema.default("#8b5cf6"),
   category: z.enum(["technical", "creative", "physical", "mental", "social", "professional", "languages", "other"]),
 })
 

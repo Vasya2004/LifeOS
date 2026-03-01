@@ -82,7 +82,7 @@ export default function AnalyticsPage() {
 
   const energyChartData = [
     { name: 'Физическая', value: energyTypes.physical, color: '#22c55e' },
-    { name: 'Ментальная', value: energyTypes.mental, color: '#3b82f6' },
+    { name: 'Ментальная', value: energyTypes.mental, color: '#8b5cf6' },
     { name: 'Эмоциональная', value: energyTypes.emotional, color: '#ec4899' },
     { name: 'Творческая', value: energyTypes.creative, color: '#8b5cf6' },
   ].filter(item => item.value > 0)
@@ -412,7 +412,7 @@ function getEnergyLabel(type: string): string {
 function getEnergyColor(type: string): string {
   switch (type) {
     case "physical": return "#22c55e"
-    case "mental": return "#3b82f6"
+    case "mental": return "#8b5cf6"
     case "emotional": return "#ec4899"
     case "creative": return "#8b5cf6"
     default: return "#6366f1"

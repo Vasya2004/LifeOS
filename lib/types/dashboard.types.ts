@@ -42,6 +42,7 @@ export interface AIAdvice {
   actionLabel?: string
   actionHref?: string
   dismissible: boolean
+  priority?: number
 }
 
 export interface MiniMetric {

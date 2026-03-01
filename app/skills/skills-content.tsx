@@ -185,10 +185,10 @@ export default function SkillsContent() {
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-blue-500">Практики</span>
+                  <span className="text-[#8b5cf6]">Практики</span>
                   <span>{tierDistribution.practitioner}</span>
                 </div>
-                <Progress value={(tierDistribution.practitioner / (skills.length || 1)) * 100} className="h-1.5 bg-gray-800 [&>div]:bg-blue-500" />
+                <Progress value={(tierDistribution.practitioner / (skills.length || 1)) * 100} className="h-1.5 bg-gray-800 [&>div]:bg-[#8b5cf6]" />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">

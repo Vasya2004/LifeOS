@@ -17,7 +17,7 @@ import { z } from "zod"
 
 const AREA_COLORS = [
   "#22c55e", // green
-  "#3b82f6", // blue
+  "#8b5cf6", // blue
   "#eab308", // yellow
   "#ec4899", // pink
   "#8b5cf6", // purple

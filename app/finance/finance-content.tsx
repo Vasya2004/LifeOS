@@ -54,7 +54,7 @@ import type { Account, Transaction, FinancialGoal, AccountType } from "@/lib/typ
 
 const ACCOUNT_TYPES = [
   { value: "cash", label: "Наличные", icon: Wallet, color: "#22c55e" },
-  { value: "bank", label: "Банк", icon: LandPlot, color: "#3b82f6" },
+  { value: "bank", label: "Банк", icon: LandPlot, color: "#8b5cf6" },
   { value: "investment", label: "Инвестиции", icon: TrendingUpIcon, color: "#8b5cf6" },
   { value: "crypto", label: "Крипта", icon: DollarSign, color: "#f59e0b" },
   { value: "debt", label: "Долги", icon: TrendingDown, color: "#ef4444" },

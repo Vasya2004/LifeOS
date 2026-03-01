@@ -17,8 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FadeIn, ScaleIn } from "@/components/animations"
 import { getSkillTier, SKILL_ACTIVITY_XP, type SkillActivityType } from "@/lib/types"
 import { addSkillActivity } from "@/lib/store"
-import { mutate } from "swr"
-import { KEYS } from "@/lib/store"
 import { 
   ArrowLeft, 
   Trophy, 
@@ -122,7 +120,7 @@ function LevelUpAnimation({ level, onComplete }: { level: number; onComplete: ()
 // Activity Type Badge
 function ActivityTypeBadge({ type }: { type: SkillActivityType }) {
   const config = {
-    theory: { icon: BookOpen, label: "Теория", color: "bg-blue-500/20 text-blue-500" },
+    theory: { icon: BookOpen, label: "Теория", color: "bg-[#8b5cf6]/20 text-[#8b5cf6]" },
     practice: { icon: Dumbbell, label: "Практика", color: "bg-green-500/20 text-green-500" },
     result: { icon: Target, label: "Результат", color: "bg-purple-500/20 text-purple-500" },
   }
@@ -244,10 +242,6 @@ export default function SkillDetailPage({ params }: { params: Promise<{ id: stri
         setNewLevel(result.newLevel)
         setTimeout(() => setShowLevelUp(true), 1500)
       }
-
-      // Refresh data
-      mutate(`${KEYS.skills}/${id}`)
-      mutate(KEYS.skills)
 
       // Reset form
       setActivityForm({

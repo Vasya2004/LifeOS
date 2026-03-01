@@ -24,9 +24,30 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 ## 4. Run SQL Migrations
 
+Execute migrations in order in SQL Editor (Supabase Dashboard):
+
 1. Go to SQL Editor in Supabase Dashboard
-2. Copy content from `supabase/migrations/001_initial_schema.sql`
-3. Paste and run
+2. Run migrations in this order:
+   - `001_initial_schema.sql` - Base tables (profiles, user_data)
+   - `003_full_schema.sql` - Main app tables (tasks, goals, habits, etc.)
+   - `005_achievements_v2.sql` - Achievements system
+   - `007_missing_tables.sql` - Additional tables (settings, streaks, quests, etc.)
+   - `008_onboarding_setup.sql` - **Onboarding trigger** (creates records on signup)
+
+### ⚠️ Important: Onboarding
+
+Migration `008_onboarding_setup.sql` creates the `handle_new_user()` trigger that automatically creates initial records when a user signs up:
+- `profiles` — user profile
+- `user_data` — sync blob
+- `user_stats` — game stats (level, XP, coins)
+- `streaks` — streak tracking
+- `user_settings` — user preferences
+- `achievement_stats` — achievement counters
+
+To manually run onboarding for existing users:
+```sql
+SELECT * FROM public.run_onboarding_for_user('user-uuid-here');
+```
 
 ## 5. Configure Auth (Optional)
 

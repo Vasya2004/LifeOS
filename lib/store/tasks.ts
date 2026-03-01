@@ -6,6 +6,7 @@ import type { Task } from "@/lib/types"
 import { getStore, setStore, KEYS, mutateKey, genId, now, today } from "./core"
 import { addXp, checkAndUpdateStreak, updateStats, getStats } from "./gamification"
 import { PRIORITY_XP } from "./defaults"
+import { addToQueue } from "@/lib/sync/offline-first"
 
 export function getTasks(): Task[] {
   return getStore(KEYS.tasks, [])
@@ -14,8 +15,10 @@ export function getTasks(): Task[] {
 export function addTask(task: Omit<Task, "id">) {
   const tasks = getTasks()
   const newTask: Task = { ...task, id: genId() }
-  setStore(KEYS.tasks, [...tasks, newTask])
-  mutateKey(KEYS.tasks)
+  const updatedTasks = [...tasks, newTask]
+  setStore(KEYS.tasks, updatedTasks)
+  mutateKey(KEYS.tasks, updatedTasks)
+  addToQueue({ table: "tasks", operation: "insert", recordId: newTask.id, data: newTask as Record<string, unknown> })
   return newTask
 }
 
@@ -35,9 +38,11 @@ export function completeTask(id: string) {
     actualDuration: task.duration
   }
   
-  setStore(KEYS.tasks, tasks.map(t => t.id === id ? completedTask : t))
-  mutateKey(KEYS.tasks)
-  
+  const updatedAfterComplete = tasks.map(t => t.id === id ? completedTask : t)
+  setStore(KEYS.tasks, updatedAfterComplete)
+  mutateKey(KEYS.tasks, updatedAfterComplete)
+  addToQueue({ table: "tasks", operation: "update", recordId: id, data: completedTask as Record<string, unknown> })
+
   // Rewards
   const xp = PRIORITY_XP[task.priority]
   addXp(xp, "task_completed")
@@ -52,14 +57,21 @@ export function completeTask(id: string) {
 
 export function updateTask(id: string, updates: Partial<Task>) {
   const tasks = getTasks()
-  setStore(KEYS.tasks, tasks.map(t => t.id === id ? { ...t, ...updates } : t))
-  mutateKey(KEYS.tasks)
+  const updatedTask = tasks.find(t => t.id === id)
+  const updatedTasks = tasks.map(t => t.id === id ? { ...t, ...updates } : t)
+  setStore(KEYS.tasks, updatedTasks)
+  mutateKey(KEYS.tasks, updatedTasks)
+  if (updatedTask) {
+    addToQueue({ table: "tasks", operation: "update", recordId: id, data: { ...updatedTask, ...updates } as Record<string, unknown> })
+  }
 }
 
 export function deleteTask(id: string) {
   const tasks = getTasks()
-  setStore(KEYS.tasks, tasks.filter(t => t.id !== id))
-  mutateKey(KEYS.tasks)
+  const updatedTasks = tasks.filter(t => t.id !== id)
+  setStore(KEYS.tasks, updatedTasks)
+  mutateKey(KEYS.tasks, updatedTasks)
+  addToQueue({ table: "tasks", operation: "delete", recordId: id })
 }
 
 export function getTodaysTasks(): Task[] {

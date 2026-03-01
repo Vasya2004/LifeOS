@@ -35,6 +35,7 @@ export interface AuthState {
   user: AuthUser | null
   isLoading: boolean
   isAuthenticated: boolean
+  isGuest: boolean
   error: AuthError | null
 }
 
@@ -71,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user: null,
     isLoading: true,
     isAuthenticated: false,
+    isGuest: false,
     error: null,
   })
 
@@ -95,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user: userWithProfile,
             isLoading: false,
             isAuthenticated: true,
+            isGuest: false,
             error: null,
           })
         } else {
@@ -103,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user: null,
             isLoading: false,
             isAuthenticated: false,
+            isGuest: false,
             error: null,
           })
         }
@@ -111,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           user: null,
           isLoading: false,
           isAuthenticated: false,
+          isGuest: false,
           error: error as AuthError,
         })
       }
@@ -177,6 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             user: null,
             isLoading: false,
             isAuthenticated: false,
+            isGuest: false,
             error: null,
           })
         } else if (event === "TOKEN_REFRESHED") {
@@ -263,42 +269,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error }
   }
 
-  const signIn = async (email: string, password: string): Promise<{ error: AuthError | null }> => {
+  const signIn = async (email: string, password: string): Promise<{ error: AuthError | null; attemptsLeft?: number }> => {
     console.log("[AuthContext] signIn started for:", email)
     setState(prev => ({ ...prev, isLoading: true, error: null }))
 
     try {
-      // Add timeout to prevent hanging UI
-      const signInPromise = supabase.auth.signInWithPassword({ email, password })
-      const timeoutPromise = new Promise<{ error: AuthError }>((_, reject) =>
-        setTimeout(() => reject(new Error("auth_timeout")), 20000) // Increased to 20s
-      )
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 20000)
 
-      console.log("[AuthContext] Calling Supabase signInWithPassword...")
-      const result = await Promise.race([signInPromise, timeoutPromise])
-      const error = (result as { error: AuthError | null }).error
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
 
-      if (error) {
-        console.warn("[AuthContext] Supabase returned error:", error.message)
-      } else {
-        console.log("[AuthContext] Supabase sign in successful")
+      const json = await res.json()
+
+      // Rate limited
+      if (res.status === 429) {
+        const errorObject = {
+          message: "too_many_attempts",
+          status: 429,
+        } as AuthError
+        setState(prev => ({ ...prev, isLoading: false, error: errorObject }))
+        return { error: errorObject, attemptsLeft: 0 }
       }
 
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error || null
-      }))
+      if (!res.ok || json.error) {
+        const errorObject = {
+          message: json.error || "invalid_credentials",
+          status: res.status,
+        } as AuthError
+        console.warn("[AuthContext] Login failed:", json.error)
+        setState(prev => ({ ...prev, isLoading: false, error: errorObject }))
+        return { error: errorObject, attemptsLeft: json.attemptsLeft }
+      }
 
-      return { error: error || null }
+      console.log("[AuthContext] Login successful via API")
+      // Supabase session is set server-side via cookie — refresh client state
+      await supabase.auth.getSession()
+      setState(prev => ({ ...prev, isLoading: false, error: null }))
+      return { error: null }
     } catch (err: any) {
       console.error("[AuthContext] signIn exception:", err)
-      const errorMsg = err?.message === "auth_timeout"
-        ? "auth_timeout"
-        : (err?.message || "Unknown error")
-
+      const errorMsg = err?.name === "AbortError" ? "auth_timeout" : (err?.message || "Unknown error")
       const errorObject = { message: errorMsg, status: 500 } as AuthError
-
       setState(prev => ({ ...prev, isLoading: false, error: errorObject }))
       return { error: errorObject }
     }
@@ -343,6 +360,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: null,
       isLoading: false,
       isAuthenticated: false,
+      isGuest: false,
       error: null,
     })
     console.log("[AuthContext] Auth state cleared")
@@ -456,6 +474,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: guestUser,
       isLoading: false,
       isAuthenticated: true,
+      isGuest: true,
       error: null
     })
     console.log("[AuthContext] State updated with guest user")

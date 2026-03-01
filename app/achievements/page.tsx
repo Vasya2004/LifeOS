@@ -6,11 +6,11 @@ import { useAchievements, useAchievementStats, useCreateAchievement } from "@/ho
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Trophy,
@@ -22,6 +22,7 @@ import {
   Lock,
   Award,
   Flame,
+  Search,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -54,13 +55,13 @@ function StatsBar() {
   if (!stats) return null
 
   const items = [
-    { label: "Всего побед",  value: stats.totalCount,        icon: <Trophy className="size-4 text-primary" /> },
-    { label: "Микро-побед",  value: stats.microCount,        icon: <Zap className="size-4" style={{ color: "#22c55e" }} /> },
-    { label: "Крупных целей", value: stats.macroCount,       icon: <Trophy className="size-4" style={{ color: "#3b82f6" }} /> },
-    { label: "Прорывов",     value: stats.breakthroughCount, icon: <Star className="size-4" style={{ color: "#8b5cf6" }} /> },
-    { label: "Моментов",     value: stats.momentCount,       icon: <Sparkles className="size-4" style={{ color: "#f59e0b" }} /> },
-    { label: "Избранных",    value: stats.favoriteCount,     icon: <Heart className="size-4 text-rose-500" /> },
-    { label: "Серия дней",   value: stats.currentStreakDays, icon: <Flame className="size-4 text-orange-500" /> },
+    { label: "Всего побед",   value: stats.totalCount,        icon: <Trophy className="size-4 text-primary" /> },
+    { label: "Микро-побед",   value: stats.microCount,        icon: <Zap className="size-4" style={{ color: "#22c55e" }} /> },
+    { label: "Крупных",       value: stats.macroCount,        icon: <Trophy className="size-4" style={{ color: "#8b5cf6" }} /> },
+    { label: "Прорывов",      value: stats.breakthroughCount, icon: <Star className="size-4" style={{ color: "#8b5cf6" }} /> },
+    { label: "Моментов",      value: stats.momentCount,       icon: <Sparkles className="size-4" style={{ color: "#f59e0b" }} /> },
+    { label: "Избранных",     value: stats.favoriteCount,     icon: <Heart className="size-4 text-rose-500" /> },
+    { label: "Серия дней",    value: stats.currentStreakDays, icon: <Flame className="size-4 text-orange-500" /> },
   ]
 
   return (
@@ -76,7 +77,66 @@ function StatsBar() {
   )
 }
 
+// ─── Category filter chips ─────────────────────────────────────────
+
+function CategoryChips({
+  active,
+  onChange,
+}: {
+  active: AchievementCategory[]
+  onChange: (cats: AchievementCategory[]) => void
+}) {
+  const categories = Object.keys(ACHIEVEMENT_CATEGORY_CONFIG) as AchievementCategory[]
+
+  const toggle = (cat: AchievementCategory) => {
+    onChange(
+      active.includes(cat) ? active.filter((c) => c !== cat) : [...active, cat]
+    )
+  }
+
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {categories.map((cat) => {
+        const cfg = ACHIEVEMENT_CATEGORY_CONFIG[cat]
+        const isActive = active.includes(cat)
+        return (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => toggle(cat)}
+            className={cn(
+              "rounded-full border px-3 py-1 text-xs font-medium transition-all",
+              isActive
+                ? "border-transparent text-white"
+                : "border-border hover:bg-muted text-muted-foreground"
+            )}
+            style={isActive ? { backgroundColor: cfg.color } : {}}
+          >
+            {cfg.labelRu}
+          </button>
+        )
+      })}
+      {active.length > 0 && (
+        <button
+          type="button"
+          onClick={() => onChange([])}
+          className="rounded-full border border-dashed px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
+        >
+          Сбросить
+        </button>
+      )}
+    </div>
+  )
+}
+
 // ─── Achievement card ─────────────────────────────────────────────
+
+const TYPE_BG: Record<AchievementType, string> = {
+  micro: "",
+  macro: "bg-[#8b5cf6]/5 ring-1 ring-[#8b5cf6]/20",
+  breakthrough: "bg-purple-500/5 ring-1 ring-purple-500/20",
+  moment: "bg-amber-500/5 ring-1 ring-amber-500/20",
+}
 
 function AchievementCard({ achievement }: { achievement: any }) {
   const cfg = ACHIEVEMENT_TYPE_CONFIG[achievement.type as AchievementType]
@@ -91,15 +151,25 @@ function AchievementCard({ achievement }: { achievement: any }) {
     achievement.unlockDate &&
     new Date(achievement.unlockDate) > new Date()
 
+  const isBig = achievement.type === "macro" || achievement.type === "breakthrough"
+
   return (
     <Card
       className={cn(
         "group relative overflow-hidden transition-all duration-200 hover:shadow-md",
+        TYPE_BG[achievement.type as AchievementType],
         isLocked && "opacity-60"
       )}
       style={{ borderLeftColor: cfg.color, borderLeftWidth: 3 }}
     >
       <CardContent className="p-4">
+        {/* Celebratory badge for big wins */}
+        {isBig && !isLocked && (
+          <span className="absolute top-2 right-2 text-base select-none">
+            {achievement.type === "breakthrough" ? "🎉" : "🏆"}
+          </span>
+        )}
+
         {/* Header row */}
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -113,11 +183,11 @@ function AchievementCard({ achievement }: { achievement: any }) {
               }
             </div>
             <div className="min-w-0">
-              <p className="font-semibold text-sm leading-tight truncate">{achievement.title}</p>
+              <p className={cn("font-semibold text-sm leading-tight truncate", isBig && "text-base")}>{achievement.title}</p>
               <p className="text-[10px] text-muted-foreground">{cfg.labelRu}</p>
             </div>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1 shrink-0 mt-0.5">
             {achievement.isFavorite && <Heart className="size-3 text-rose-500 fill-rose-500" />}
             {emotionCfg && <span className="text-sm">{emotionCfg.emoji}</span>}
           </div>
@@ -134,6 +204,15 @@ function AchievementCard({ achievement }: { achievement: any }) {
             <p className="text-[11px] italic text-muted-foreground line-clamp-2">
               "{achievement.lessonLearned}"
             </p>
+          </div>
+        )}
+
+        {/* Auto-generated badge */}
+        {achievement.isAutoGenerated && (
+          <div className="mb-2">
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+              Авто
+            </Badge>
           </div>
         )}
 
@@ -162,9 +241,9 @@ function AchievementCard({ achievement }: { achievement: any }) {
 
 // ─── Add achievement dialog ───────────────────────────────────────
 
-function AddAchievementDialog() {
+function AddAchievementDialog({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const createAchievement = useCreateAchievement()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(defaultOpen)
   const [title, setTitle] = React.useState("")
   const [description, setDescription] = React.useState("")
   const [type, setType] = React.useState<AchievementType>("micro")
@@ -221,9 +300,7 @@ function AddAchievementDialog() {
                   onClick={() => setType(t)}
                   className={cn(
                     "flex items-center gap-2 rounded-lg border p-2.5 text-left text-sm transition-all",
-                    type === t
-                      ? "border-transparent text-white"
-                      : "hover:bg-muted"
+                    type === t ? "border-transparent text-white" : "hover:bg-muted"
                   )}
                   style={type === t ? { backgroundColor: cfg.color } : {}}
                 >
@@ -236,9 +313,9 @@ function AddAchievementDialog() {
 
           {/* Title */}
           <div className="space-y-1.5">
-            <Label htmlFor="title">Что произошло? *</Label>
+            <Label htmlFor="ach-title">Что произошло? *</Label>
             <Input
-              id="title"
+              id="ach-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Название победы"
@@ -248,9 +325,9 @@ function AddAchievementDialog() {
 
           {/* Description */}
           <div className="space-y-1.5">
-            <Label htmlFor="description">Подробнее</Label>
+            <Label htmlFor="ach-desc">Подробнее</Label>
             <Textarea
-              id="description"
+              id="ach-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Расскажи чуть больше..."
@@ -261,7 +338,7 @@ function AddAchievementDialog() {
           {/* Category + Date row */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label>Категория</Label>
+              <Label>Сфера жизни</Label>
               <Select value={category} onValueChange={(v) => setCategory(v as AchievementCategory)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Выбери..." />
@@ -276,9 +353,9 @@ function AddAchievementDialog() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="date">Дата</Label>
+              <Label htmlFor="ach-date">Дата</Label>
               <Input
-                id="date"
+                id="ach-date"
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
@@ -312,9 +389,9 @@ function AddAchievementDialog() {
 
           {/* Lesson learned */}
           <div className="space-y-1.5">
-            <Label htmlFor="lesson">Урок / инсайт</Label>
+            <Label htmlFor="ach-lesson">Урок / инсайт</Label>
             <Input
-              id="lesson"
+              id="ach-lesson"
               value={lesson}
               onChange={(e) => setLesson(e.target.value)}
               placeholder="Что понял(а) благодаря этому?"
@@ -334,20 +411,24 @@ function AddAchievementDialog() {
 
 export default function AchievementsPage() {
   const [activeTab, setActiveTab] = React.useState<string>("all")
+  const [activeCats, setActiveCats] = React.useState<AchievementCategory[]>([])
+  const [search, setSearch] = React.useState("")
 
-  const typeFilter = activeTab === "all"
-    ? undefined
-    : { types: [activeTab as AchievementType] }
+  const filters = React.useMemo(() => ({
+    types: activeTab === "all" ? undefined : [activeTab as AchievementType],
+    categories: activeCats.length > 0 ? activeCats : undefined,
+    searchQuery: search.trim() || undefined,
+  }), [activeTab, activeCats, search])
 
   const { data: achievements, isLoading } = useAchievements(
-    typeFilter,
+    filters,
     { field: "date", direction: "desc" }
   )
 
   const tabs = [
     { value: "all",          label: "Все" },
     { value: "micro",        label: "Микро-победы" },
-    { value: "macro",        label: "Крупные цели" },
+    { value: "macro",        label: "Крупные" },
     { value: "breakthrough", label: "Прорывы" },
     { value: "moment",       label: "Моменты" },
   ]
@@ -374,15 +455,31 @@ export default function AchievementsPage() {
           <StatsBar />
         </div>
 
-        {/* Tabs + grid */}
+        {/* Search */}
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Поиск по победам..."
+            className="pl-9"
+          />
+        </div>
+
+        {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-4">
+          <TabsList className="mb-3">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} className="text-xs sm:text-sm">
                 {tab.label}
               </TabsTrigger>
             ))}
           </TabsList>
+
+          {/* Category chips */}
+          <div className="mb-4">
+            <CategoryChips active={activeCats} onChange={setActiveCats} />
+          </div>
 
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
@@ -403,11 +500,17 @@ export default function AchievementsPage() {
                   <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
                     <Trophy className="size-7 text-muted-foreground" />
                   </div>
-                  <p className="font-medium">Нет побед в этой категории</p>
-                  <p className="text-sm text-muted-foreground mt-1 mb-4">
-                    Запиши свою первую победу — любую, даже самую маленькую
+                  <p className="font-medium">
+                    {search || activeCats.length > 0
+                      ? "Ничего не найдено"
+                      : "Нет побед в этой категории"}
                   </p>
-                  <AddAchievementDialog />
+                  <p className="text-sm text-muted-foreground mt-1 mb-4">
+                    {search || activeCats.length > 0
+                      ? "Попробуй изменить фильтры или поисковый запрос"
+                      : "Запиши свою первую победу — любую, даже самую маленькую"}
+                  </p>
+                  {!search && activeCats.length === 0 && <AddAchievementDialog />}
                 </div>
               )}
             </TabsContent>

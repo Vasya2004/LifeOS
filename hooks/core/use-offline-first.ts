@@ -31,23 +31,45 @@ export function useOfflineFirst<T>(
   const { data, error, isLoading, mutate } = useSWR(
     swrKey,
     async (): Promise<T> => {
-      // Try server first if authenticated and server fetcher provided
+      const localData = getLocal()
+
+      // Try server if authenticated and server fetcher provided
       if (isAuthenticated && getServer) {
         try {
           const serverData = await getServer()
-          // Update local cache
-          if (setLocal) {
-            setLocal(serverData)
+
+          // For arrays: merge server items into local, keeping local versions
+          // (local is always up-to-date; server may be stale if sync queue hasn't run)
+          let merged: T
+          if (Array.isArray(serverData) && Array.isArray(localData)) {
+            const localMap = new Map(
+              (localData as { id: string }[]).map((item) => [item.id, item])
+            )
+            // Add server items that don't exist locally (e.g. from another device)
+            const extra = (serverData as { id: string }[]).filter(
+              (item) => !localMap.has(item.id)
+            )
+            merged = (extra.length > 0 ? [...localData, ...extra] : localData) as T
+          } else if (localData === null || localData === undefined) {
+            // For single objects: use server only if local is empty
+            merged = serverData
           } else {
-            setStore(storageKey, serverData)
+            // Local exists — keep it
+            merged = localData
           }
-          return serverData
+
+          if (setLocal) {
+            setLocal(merged)
+          } else {
+            setStore(storageKey, merged)
+          }
+          return merged
         } catch {
           // Fall through to local
         }
       }
       // Return local data
-      return getLocal()
+      return localData
     },
     {
       revalidateOnFocus: false,

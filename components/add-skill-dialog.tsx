@@ -56,7 +56,7 @@ export function AddSkillDialog() {
     description: "",
     category: "",
     icon: "💻",
-    color: "#3b82f6",
+    color: "#8b5cf6",
   })
 
   const handleSubmit = async () => {
@@ -83,7 +83,7 @@ export function AddSkillDialog() {
         description: "",
         category: "",
         icon: "💻",
-        color: "#3b82f6",
+        color: "#8b5cf6",
       })
     } catch (error) {
       console.error("Failed to create skill:", error)

@@ -104,8 +104,8 @@ export default function StoragePage() {
               title="Источники"
               value={stats?.totalSources || 0}
               icon={BookOpen}
-              color="text-blue-500"
-              bgColor="bg-blue-500/10"
+              color="text-[#8b5cf6]"
+              bgColor="bg-[#8b5cf6]/10"
               subtitle={`${stats?.activeSources?.length || 0} активных`}
             />
             <StatsCard
@@ -263,7 +263,7 @@ function FolderCard({
 
 function InsightCard({ insight }: { insight: Insight }) {
   const priorityColors: Record<InsightPriority, string> = {
-    low: 'bg-blue-500/10 text-blue-500',
+    low: 'bg-[#8b5cf6]/10 text-[#8b5cf6]',
     medium: 'bg-yellow-500/10 text-yellow-500',
     high: 'bg-red-500/10 text-red-500',
   }

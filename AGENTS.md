@@ -140,8 +140,21 @@ supabase/migrations/   # Database migrations
 
 ### Database Schema
 
+#### Onboarding Tables (auto-created on signup)
+When a new user registers, `handle_new_user()` trigger creates:
+
+| Table | Purpose |
+|-------|---------|
+| `profiles` | User profile (name, avatar, bio, timezone) |
+| `user_data` | JSON blob for local-first sync |
+| `user_stats` | Game stats: level, XP, coins, tier, streaks |
+| `streaks` | Streak tracking with freeze tokens |
+| `user_settings` | Preferences: theme, notifications, privacy |
+| `achievement_stats` | Achievement counters and streaks |
+
+#### Main Data Tables
 ```sql
--- Main data storage
+-- Core entities
 user_data (
   id uuid,
   user_id uuid references auth.users,
@@ -169,6 +182,12 @@ push_subscriptions (
   p256dh text,
   auth text
 )
+```
+
+#### Manual Onboarding
+For existing users without onboarding records:
+```sql
+SELECT * FROM public.run_onboarding_for_user('user-uuid-here');
 ```
 
 ---

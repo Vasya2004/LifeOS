@@ -2,7 +2,7 @@
 
 import { AppShell } from "@/components/app-shell"
 import { useTasks, useGoals, useStats } from "@/hooks/use-data"
-import { addTask, completeTask, deleteTask, updateTask } from "@/lib/store"
+import { useCreateTask, useCompleteTask, useDeleteTask, useUpdateTask } from "@/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -37,7 +37,7 @@ import type { Task, Goal } from "@/lib/types"
 
 const ENERGY_TYPES = [
   { value: "physical", label: "Физическая", icon: Zap, color: "#22c55e" },
-  { value: "mental", label: "Ментальная", icon: Brain, color: "#3b82f6" },
+  { value: "mental", label: "Ментальная", icon: Brain, color: "#8b5cf6" },
   { value: "emotional", label: "Эмоциональная", icon: Heart, color: "#ec4899" },
   { value: "creative", label: "Творческая", icon: Sparkles, color: "#8b5cf6" },
 ]
@@ -56,10 +56,14 @@ const PRIORITIES = [
 ]
 
 export default function TasksPage() {
-  const { data: tasks, mutate } = useTasks()
+  const { data: tasks } = useTasks()
   const { data: goals } = useGoals()
   const { data: stats } = useStats()
-  
+  const createTask = useCreateTask()
+  const completeTaskFn = useCompleteTask()
+  const deleteTaskFn = useDeleteTask()
+  const updateTaskFn = useUpdateTask()
+
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -107,16 +111,15 @@ export default function TasksPage() {
     schema: createTaskSchema,
     defaultValues,
     onSubmit: async (data) => {
-      addTask({
+      await createTask({
         ...data,
         status: "todo",
         priority: data.priority as "low" | "medium" | "high" | "critical",
         energyCost: data.energyCost as "low" | "medium" | "high",
         energyType: data.energyType as "physical" | "mental" | "emotional" | "creative",
       })
-      
+
       toast.success("Задача создана!")
-      mutate()
       setIsOpen(false)
       resetForm()
     },
@@ -134,34 +137,31 @@ export default function TasksPage() {
 
   const handleComplete = (task: Task) => {
     if (task.status === "completed") return
-    
-    completeTask(task.id)
-    
-    const xpReward = PRIORITIES.find(p => p.value === task.priority) ? 
+
+    completeTaskFn(task.id)
+
+    const xpReward = PRIORITIES.find(p => p.value === task.priority) ?
       (task.priority === "critical" ? 30 : task.priority === "high" ? 20 : task.priority === "medium" ? 10 : 5) : 5
-    
+
     toast.success(`Задача выполнена! +${xpReward} XP`, {
       icon: <Trophy className="size-4 text-warning" />
     })
-    mutate()
   }
 
   const handleDelete = (id: string) => {
     if (confirm("Удалить задачу?")) {
-      deleteTask(id)
+      deleteTaskFn(id)
       toast.success("Задача удалена")
-      mutate()
     }
   }
 
   const handleRestore = (task: Task) => {
-    updateTask(task.id, { status: "todo", completedAt: undefined })
+    updateTaskFn(task.id, { status: "todo", completedAt: undefined })
     toast.success("Задача восстановлена")
-    mutate()
   }
 
   const goalOptions = [
-    { value: "", label: "Без цели" },
+    { value: "none", label: "Без цели" },
     ...(goals?.filter((g: Goal) => g.status === "active").map((goal: Goal) => ({
       value: goal.id,
       label: goal.title,
@@ -217,8 +217,8 @@ export default function TasksPage() {
                   <SelectField
                     label="Связана с целью"
                     name="projectId"
-                    value={watch("projectId") || ""}
-                    onValueChange={(v) => setValue("projectId", v || undefined, { shouldValidate: true })}
+                    value={watch("projectId") || "none"}
+                    onValueChange={(v) => setValue("projectId", v === "none" ? undefined : v, { shouldValidate: true })}
                     options={goalOptions}
                     placeholder="Выберите цель (опционально)"
                   />
@@ -517,18 +517,165 @@ function TaskItem({
   )
 }
 
+// ─── Task templates ──────────────────────────────────────────────────────────
+
+const TASK_TEMPLATES = [
+  {
+    icon: "🏃",
+    title: "30 минут прогулки",
+    priority: "medium" as const,
+    energyCost: "low" as const,
+    energyType: "physical" as const,
+    duration: 30,
+    xp: 10,
+    tag: "Здоровье",
+  },
+  {
+    icon: "📖",
+    title: "Прочитать 10 страниц книги",
+    priority: "medium" as const,
+    energyCost: "low" as const,
+    energyType: "mental" as const,
+    duration: 20,
+    xp: 10,
+    tag: "Развитие",
+  },
+  {
+    icon: "📋",
+    title: "Составить план на неделю",
+    priority: "high" as const,
+    energyCost: "medium" as const,
+    energyType: "mental" as const,
+    duration: 30,
+    xp: 20,
+    tag: "Продуктивность",
+    isQuest: true,
+  },
+  {
+    icon: "💧",
+    title: "Выпить 2 литра воды",
+    priority: "low" as const,
+    energyCost: "low" as const,
+    energyType: "physical" as const,
+    duration: 5,
+    xp: 5,
+    tag: "Здоровье",
+  },
+  {
+    icon: "📞",
+    title: "Позвонить близкому человеку",
+    priority: "medium" as const,
+    energyCost: "low" as const,
+    energyType: "emotional" as const,
+    duration: 15,
+    xp: 10,
+    tag: "Отношения",
+  },
+  {
+    icon: "🧹",
+    title: "Разобрать рабочий стол / почту",
+    priority: "high" as const,
+    energyCost: "medium" as const,
+    energyType: "mental" as const,
+    duration: 20,
+    xp: 20,
+    tag: "Порядок",
+    isQuest: true,
+  },
+]
+
 function EmptyTasksState({ onCreate }: { onCreate: () => void }) {
+  const createTask = useCreateTask()
+  const today = new Date().toISOString().split("T")[0]
+  const [creating, setCreating] = useState<string | null>(null)
+
+  const handleTemplate = async (tpl: typeof TASK_TEMPLATES[0]) => {
+    setCreating(tpl.title)
+    try {
+      await createTask({
+        title: tpl.title,
+        status: "todo",
+        priority: tpl.priority,
+        energyCost: tpl.energyCost,
+        energyType: tpl.energyType,
+        duration: tpl.duration,
+        scheduledDate: today,
+      })
+      toast.success(`Задача создана! +${tpl.xp} XP`)
+    } finally {
+      setCreating(null)
+    }
+  }
+
   return (
-    <Card className="p-12 text-center">
-      <CheckSquare className="size-12 mx-auto mb-4 text-muted-foreground/50" />
-      <h3 className="text-lg font-medium mb-2">Нет задач на сегодня</h3>
-      <p className="text-muted-foreground mb-4 max-w-sm mx-auto">
-        Создайте задачи для продуктивного дня
-      </p>
-      <Button onClick={onCreate}>
-        <Plus className="mr-2 size-4" />
-        Добавить задачу
-      </Button>
-    </Card>
+    <div className="space-y-5">
+      {/* Quest vs Task explanation */}
+      <div className="rounded-xl border border-border bg-muted/40 px-4 py-3.5 flex items-start gap-3">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#8b5cf6]/10 mt-0.5">
+          <Sparkles className="size-4 text-indigo-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium mb-1">Квест vs задача — в чём разница?</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <span className="font-medium text-foreground">Квест</span> — это задача с высоким или критическим приоритетом, привязанная к цели. Даёт больше XP (20–30) и продвигает прогресс цели.{" "}
+            <span className="font-medium text-foreground">Обычная задача</span> — любое дело без особых условий, дает 5–10 XP. Начни с шаблона ниже или создай свою.
+          </p>
+        </div>
+      </div>
+
+      {/* Templates */}
+      <div>
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+          Готовые шаблоны — выбери и сразу начни
+        </p>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {TASK_TEMPLATES.map((tpl) => (
+            <button
+              key={tpl.title}
+              onClick={() => handleTemplate(tpl)}
+              disabled={creating === tpl.title}
+              className="flex items-center gap-3 p-3.5 rounded-lg border bg-card hover:border-primary/40 hover:bg-accent/30 transition-all text-left group disabled:opacity-60"
+            >
+              <span className="text-xl leading-none shrink-0">{tpl.icon}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-sm font-medium leading-tight">{tpl.title}</span>
+                  {tpl.isQuest && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#8b5cf6]/15 text-indigo-400">
+                      Квест
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] text-muted-foreground">{tpl.tag}</span>
+                  <span className="text-[10px] text-muted-foreground">·</span>
+                  <span className="text-[10px] font-medium text-amber-500">+{tpl.xp} XP</span>
+                  {tpl.duration && (
+                    <>
+                      <span className="text-[10px] text-muted-foreground">·</span>
+                      <span className="text-[10px] text-muted-foreground">{tpl.duration} мин</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <Plus className="size-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom task CTA */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-border" />
+        <span className="text-xs text-muted-foreground">или</span>
+        <div className="flex-1 h-px bg-border" />
+      </div>
+      <div className="text-center">
+        <Button onClick={onCreate} variant="outline">
+          <Plus className="mr-2 size-4" />
+          Создать свою задачу
+        </Button>
+      </div>
+    </div>
   )
 }

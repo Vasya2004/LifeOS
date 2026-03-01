@@ -35,24 +35,30 @@ export interface Milestone {
 
 export interface Project {
   id: string
-  goalId: string // К какой цели относится
   title: string
   description: string
-  status: 'planning' | 'active' | 'completed' | 'on_hold'
-  
-  // Время
-  startDate: string
-  targetDate: string
+  status: 'active' | 'paused' | 'completed' | 'archived'
+  priority: 1 | 2 | 3 | 4 | 5
+
+  // Визуал
+  color: string  // hex, e.g. "#6366f1"
+  icon: string   // emoji, e.g. "🚀"
+
+  // Связи
+  goalId?: string   // Optional link to a goal
+  areaId?: string   // Optional link to life area
+
+  // Даты
+  startedAt: string
+  deadline?: string
   completedAt?: string
-  
-  // Сложность
-  estimatedHours: number
-  actualHours: number
-  difficulty: 'easy' | 'medium' | 'hard' | 'epic'
-  
-  // Награды
-  xpReward: number
-  coinReward: number
+
+  // Гейми
+  xpAwarded: number
+
+  // Мета
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Task {

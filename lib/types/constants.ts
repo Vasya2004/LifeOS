@@ -7,7 +7,7 @@ import type { SkillTierLevel } from './skills'
 // Life Areas
 export const LIFE_AREAS = [
   { id: 'health', name: 'Health & Fitness', icon: 'heart', color: '#22c55e' },
-  { id: 'career', name: 'Career & Business', icon: 'briefcase', color: '#3b82f6' },
+  { id: 'career', name: 'Career & Business', icon: 'briefcase', color: '#8b5cf6' },
   { id: 'finance', name: 'Finance & Wealth', icon: 'wallet', color: '#eab308' },
   { id: 'relationships', name: 'Relationships', icon: 'users', color: '#ec4899' },
   { id: 'growth', name: 'Personal Growth', icon: 'brain', color: '#8b5cf6' },
@@ -108,9 +108,9 @@ export const SKILL_TIERS: Record<SkillTierLevel, {
   3: { 
     title: 'Практик', 
     titleEn: 'Practitioner',
-    color: 'text-blue-500', 
-    borderColor: 'border-blue-500',
-    bgColor: 'bg-blue-500/10',
+    color: 'text-[#8b5cf6]', 
+    borderColor: 'border-[#8b5cf6]',
+    bgColor: 'bg-[#8b5cf6]/10',
     glowEffect: 'glow',
     requiresCertificate: false
   },
@@ -172,7 +172,7 @@ export const SKILL_ACTIVITY_XP = {
 
 // Skill categories
 export const SKILL_CATEGORIES = [
-  { id: 'technical', name: 'Технические', icon: 'code', color: '#3b82f6' },
+  { id: 'technical', name: 'Технические', icon: 'code', color: '#8b5cf6' },
   { id: 'creative', name: 'Творческие', icon: 'palette', color: '#ec4899' },
   { id: 'physical', name: 'Физические', icon: 'dumbbell', color: '#22c55e' },
   { id: 'mental', name: 'Ментальные', icon: 'brain', color: '#8b5cf6' },

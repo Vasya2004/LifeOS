@@ -1,14 +1,14 @@
 "use client"
 
 import { useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Button, XpBadge } from "@/components/ui"
+import { GoalProgress } from "@/components/ui"
+import { SkeletonCard } from "@/components/ui"
 import { useGoals } from "@/hooks/modules/use-goals"
 import { FadeIn } from "@/components/animations"
-import { Skull, Plus, ArrowRight, CalendarDays, Zap } from "lucide-react"
+import { Skull, Plus, ArrowRight, CalendarDays } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
 import type { Goal } from "@/lib/types"
 
 function getDaysLeft(targetDate: string): number | null {
@@ -18,7 +18,6 @@ function getDaysLeft(targetDate: string): number | null {
 }
 
 function estimateXpReward(goal: Goal): number {
-  // Priority 1-5 numeric: 5 = most important
   const base = (goal.priority as number) * 100
   const progressBonus = Math.round((goal.progress / 100) * 200)
   return base + progressBonus
@@ -30,7 +29,6 @@ export function BossBattle() {
   const boss = useMemo(() => {
     if (!goals) return null
     const active = goals.filter((g: Goal) => g.status === "active")
-    // Priority is numeric 1-5: sort descending (5 = highest first)
     const sorted = active.slice().sort((a: Goal, b: Goal) => {
       const pDiff = (b.priority as number) - (a.priority as number)
       if (pDiff !== 0) return pDiff
@@ -40,35 +38,32 @@ export function BossBattle() {
   }, [goals])
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-3">
-            <div className="h-5 w-32 bg-muted animate-pulse rounded" />
-            <div className="h-7 w-64 bg-muted animate-pulse rounded" />
-            <div className="h-3 w-full bg-muted animate-pulse rounded" />
-          </div>
-        </CardContent>
-      </Card>
-    )
+    return <SkeletonCard />
   }
 
   if (!boss) {
     return (
       <FadeIn delay={0.2}>
-        <Card className="border-dashed">
-          <CardContent className="p-6 text-center space-y-3">
-            <Skull className="size-8 mx-auto text-muted-foreground/50" />
+        <Card className="h-full border-red-500/10 overflow-hidden">
+          <CardContent className="p-6 flex flex-col items-center justify-center min-h-[160px] text-center space-y-3">
+            <div className="relative">
+              <div className="flex size-14 items-center justify-center rounded-full bg-red-500/10 ring-1 ring-red-500/20">
+                <Skull className="size-7 text-red-400/60" />
+              </div>
+              <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                ?
+              </div>
+            </div>
             <div>
-              <p className="font-semibold text-sm">Нет активной Босс-Битвы</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Создайте главную цель квартала, чтобы сфокусировать усилия.
+              <p className="font-semibold text-sm font-heading">Твой первый Босс ждёт!</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-[220px] leading-relaxed">
+                Определи главную цель квартала — это твой финальный Босс. Победи его и получи эпическую награду.
               </p>
             </div>
             <Link href="/goals">
-              <Button size="sm" variant="outline" className="gap-1">
-                <Plus className="size-3" />
-                Создать главную цель
+              <Button variant="outline" size="sm" className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50">
+                <Plus className="size-3 mr-1" />
+                Бросить вызов Боссу
               </Button>
             </Link>
           </CardContent>
@@ -83,50 +78,38 @@ export function BossBattle() {
 
   return (
     <FadeIn delay={0.2}>
-      <Card className="border-destructive/20 bg-gradient-to-br from-destructive/5 to-background overflow-hidden">
+      <Card className="border-red-500/20 overflow-hidden">
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-destructive/10">
-              <Skull className="size-4 text-destructive" />
+            <div className="p-1.5 rounded-lg bg-red-500/10">
+              <Skull className="size-4 text-red-500" />
             </div>
             <div>
-              <CardTitle className="text-base">Босс-Битва</CardTitle>
-              <p className="text-[11px] text-muted-foreground">Главная цель квартала</p>
+              <CardTitle className="text-base font-heading">Босс-Битва</CardTitle>
+              <p className="text-xs text-muted-foreground">Главная цель квартала</p>
             </div>
           </div>
           <Link href={`/goals`}>
-            <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
-              Детали <ArrowRight className="size-3" />
+            <Button variant="ghost" size="sm">
+              Детали <ArrowRight className="size-3 ml-1" />
             </Button>
           </Link>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Title */}
-          <h3 className="font-bold text-base leading-tight">{boss.title}</h3>
+          <h3 className="font-bold font-heading text-base leading-tight">{boss.title}</h3>
 
-          {/* Progress bar */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center text-xs text-muted-foreground">
-              <span>Прогресс</span>
-              <span className="font-bold text-foreground">{boss.progress}%</span>
-            </div>
-            <div className="relative h-3 w-full rounded-full bg-muted overflow-hidden">
-              <motion.div
-                className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-destructive/70 to-destructive"
-                initial={{ width: 0 }}
-                animate={{ width: `${boss.progress}%` }}
-                transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
-              />
-            </div>
-          </div>
+          <GoalProgress 
+            current={boss.progress} 
+            target={100} 
+            title="Прогресс" 
+          />
 
-          {/* Meta row */}
           <div className="flex items-center gap-4 text-xs">
             {daysLeft !== null && (
               <div
                 className={`flex items-center gap-1 font-semibold ${
-                  isUrgent ? "text-destructive" : "text-muted-foreground"
+                  isUrgent ? "text-orange-400" : "text-muted-foreground"
                 }`}
               >
                 <CalendarDays className="size-3.5" />
@@ -135,9 +118,8 @@ export function BossBattle() {
                   : `Осталось ${daysLeft} ${daysLeft === 1 ? "день" : daysLeft < 5 ? "дня" : "дней"}`}
               </div>
             )}
-            <div className="flex items-center gap-1 text-chart-3 font-semibold ml-auto">
-              <Zap className="size-3.5" />
-              {xpReward} XP награда
+            <div className="ml-auto">
+              <XpBadge value={xpReward} />
             </div>
           </div>
         </CardContent>

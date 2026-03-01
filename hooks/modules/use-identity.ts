@@ -9,7 +9,7 @@ import * as localStore from "@/lib/store"
 import * as db from "@/lib/api/database"
 import { setStore } from "@/lib/store/utils/storage"
 import { useAuth } from "@/lib/auth/context"
-import { syncToServer } from "@/lib/sync/offline-first"
+import { addToQueue } from "@/lib/sync/offline-first"
 import type { Identity, CoreValue, Role } from "@/lib/types"
 
 const IDENTITY_KEY = "identity"
@@ -17,12 +17,12 @@ const VALUES_KEY = "values"
 const ROLES_KEY = "roles"
 
 export function useIdentity() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return useOfflineFirst<Identity>(IDENTITY_KEY, {
     storageKey: IDENTITY_KEY,
     getLocal: localStore.getIdentity,
-    getServer: isAuthenticated
+    getServer: isAuthenticated && !isGuest
       ? async () => {
         try {
           const profile = await db.getProfile()
@@ -31,6 +31,7 @@ export function useIdentity() {
             name: profile.name,
             vision: profile.vision || "",
             mission: profile.mission || "",
+            onboardingCompleted: profile.onboarding_completed || false,
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt,
           }
@@ -51,24 +52,24 @@ export function useUpdateIdentity() {
 
 // Values
 export function useValues() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return useOfflineFirst<CoreValue[]>(VALUES_KEY, {
     storageKey: VALUES_KEY,
     getLocal: localStore.getValues,
-    getServer: isAuthenticated ? db.getValues : undefined,
+    getServer: isAuthenticated && !isGuest ? db.getValues : undefined,
     setLocal: (data) => setStore(VALUES_KEY, data),
   })
 }
 
 export function useCreateValue() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (value: Omit<CoreValue, "id">) => {
     const newValue = localStore.addValue(value)
 
-    if (isAuthenticated) {
-      await syncToServer("insert", "values", newValue, () => { })
+    if (isAuthenticated && !isGuest) {
+      addToQueue({ table: "values", operation: "insert", recordId: newValue.id, data: newValue as unknown as Record<string, unknown> })
     }
 
     return newValue
@@ -76,26 +77,26 @@ export function useCreateValue() {
 }
 
 export function useUpdateValue() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (id: string, updates: Partial<CoreValue>) => {
     localStore.updateValue(id, updates)
 
-    if (isAuthenticated) {
+    if (isAuthenticated && !isGuest) {
       const updated = { ...localStore.getValues().find(v => v.id === id), ...updates, id }
-      await syncToServer("update", "values", updated, () => { })
+      addToQueue({ table: "values", operation: "update", recordId: updated.id as string, data: updated as unknown as Record<string, unknown> })
     }
   }
 }
 
 export function useDeleteValue() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (id: string) => {
     localStore.deleteValue(id)
 
-    if (isAuthenticated) {
-      await syncToServer("delete", "values", id, () => { })
+    if (isAuthenticated && !isGuest) {
+      addToQueue({ table: "values", operation: "delete", recordId: id })
     }
   }
 }
@@ -106,7 +107,7 @@ export function useRoles() {
 }
 
 export function useCreateRole() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (role: Omit<Role, "id">) => {
     const newRole = localStore.addRole(role)
@@ -122,7 +123,7 @@ export function useCreateRole() {
 }
 
 export function useUpdateRole() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (id: string, updates: Partial<Role>) => {
     localStore.updateRole(id, updates)
@@ -134,7 +135,7 @@ export function useUpdateRole() {
 }
 
 export function useDeleteRole() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isGuest } = useAuth()
 
   return async (id: string) => {
     localStore.deleteRole(id)

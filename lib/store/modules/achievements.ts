@@ -7,9 +7,11 @@ import { getCurrentUserId } from "@/lib/auth/user-id"
 import { getStore, setStore } from "../utils/storage"
 import { genId } from "../utils/id"
 import { now, today } from "../utils/date"
-import type { 
-  Achievement, 
-  AchievementCollection, 
+import { addXp, addCoins } from "@/lib/store/gamification"
+import { addToQueue } from "@/lib/sync/offline-first"
+import type {
+  Achievement,
+  AchievementCollection,
   AchievementStats,
   CreateAchievementInput,
   UpdateAchievementInput,
@@ -17,6 +19,14 @@ import type {
   AchievementFilters,
   AchievementSort
 } from "@/lib/types/achievements"
+
+// Coins awarded per achievement type
+const ACHIEVEMENT_COINS: Record<AchievementType, number> = {
+  micro: 10,
+  macro: 50,
+  breakthrough: 100,
+  moment: 20,
+}
 
 const KEYS = {
   achievements: "achievements",
@@ -97,7 +107,14 @@ export function createAchievement(input: CreateAchievementInput): Achievement {
   if (input.collectionIds?.length) {
     addToCollections(newAchievement.id, input.collectionIds)
   }
-  
+
+  // Award XP and coins
+  addXp(newAchievement.xpAwarded, "achievement_created")
+  addCoins(ACHIEVEMENT_COINS[input.type])
+
+  // Queue for server sync
+  addToQueue({ table: "achievements", operation: "insert", recordId: achievementId, data: newAchievement as unknown as Record<string, unknown> })
+
   mutate(KEYS.achievements)
   return newAchievement
 }
@@ -126,7 +143,9 @@ export function updateAchievement(input: UpdateAchievementInput): Achievement | 
     updated,
     ...achievements.slice(index + 1),
   ])
-  
+
+  addToQueue({ table: "achievements", operation: "update", recordId: input.id, data: updated as unknown as Record<string, unknown> })
+
   mutate(KEYS.achievements)
   return updated
 }
@@ -138,8 +157,11 @@ export function deleteAchievement(id: string): boolean {
   if (!exists) return false
   
   setStore(KEYS.achievements, achievements.filter(a => a.id !== id))
+
+  addToQueue({ table: "achievements", operation: "delete", recordId: id })
+
   mutate(KEYS.achievements)
-  
+
   // Recalculate stats
   recalculateStats()
   
@@ -457,7 +479,7 @@ function getBadgeIconForType(type: AchievementType): string {
 function getBadgeColorForType(type: AchievementType): string {
   switch (type) {
     case "micro": return "#22c55e"
-    case "macro": return "#3b82f6"
+    case "macro": return "#8b5cf6"
     case "breakthrough": return "#8b5cf6"
     case "moment": return "#f59e0b"
     default: return "#6366f1"

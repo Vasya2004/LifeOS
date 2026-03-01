@@ -1,7 +1,7 @@
 // ============================================
-// SYNC MODULE INDEX
+// SYNC MODULE - Main Export
 // ============================================
 
-export { syncEngine } from "./sync-engine"
-export type { SyncState, SyncQueueItem, SyncOperation } from "./sync-engine"
-export { useSyncState, useSyncIndicator } from "./hooks"
+export * from './conflict-resolver'
+export * from './versioning'
+export * from './sync-engine'

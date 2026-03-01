@@ -41,24 +41,27 @@ export function addSkill(skill: Omit<Skill, "id" | "userId" | "currentLevel" | "
     createdAt: now(),
     updatedAt: now(),
   }
-  setStore(KEYS.skills, [...skills, newSkill])
-  mutateKey(KEYS.skills)
+  const updatedSkills = [...skills, newSkill]
+  setStore(KEYS.skills, updatedSkills)
+  mutateKey(KEYS.skills, updatedSkills)
   addXp(25, "skill_created")
   return newSkill
 }
 
 export function updateSkill(id: string, updates: Partial<Skill>) {
   const skills = getSkills()
-  setStore(KEYS.skills, skills.map(s => 
+  const updatedSkills = skills.map(s =>
     s.id === id ? { ...s, ...updates, updatedAt: now() } : s
-  ))
-  mutateKey(KEYS.skills)
+  )
+  setStore(KEYS.skills, updatedSkills)
+  mutateKey(KEYS.skills, updatedSkills)
 }
 
 export function deleteSkill(id: string) {
   const skills = getSkills()
-  setStore(KEYS.skills, skills.filter(s => s.id !== id))
-  mutateKey(KEYS.skills)
+  const updatedSkills = skills.filter(s => s.id !== id)
+  setStore(KEYS.skills, updatedSkills)
+  mutateKey(KEYS.skills, updatedSkills)
 }
 
 // Skill Activities & XP
@@ -122,8 +125,9 @@ export function addSkillActivity(
     updatedAt: now(),
   }
 
-  setStore(KEYS.skills, skills.map(s => s.id === skillId ? updatedSkill : s))
-  mutateKey(KEYS.skills)
+  const updatedSkills = skills.map(s => s.id === skillId ? updatedSkill : s)
+  setStore(KEYS.skills, updatedSkills)
+  mutateKey(KEYS.skills, updatedSkills)
 
   return { success: true, leveledUp, newLevel: leveledUp ? newLevel : undefined, certificate }
 }

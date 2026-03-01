@@ -1,9 +1,9 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui"
 import { FadeIn } from "@/components/animations"
-import { CheckSquare, Target, TrendingUp, Dumbbell, Zap } from "lucide-react"
+import { CheckSquare, Target, TrendingUp, Repeat, Zap } from "lucide-react"
 import Link from "next/link"
 
 const ACTIONS = [
@@ -11,29 +11,29 @@ const ACTIONS = [
     label: "Новая задача",
     href: "/tasks/new",
     icon: CheckSquare,
-    colorClass: "text-blue-400",
-    bgClass: "bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/20",
+    variant: "outline" as const,
+    colorClass: "text-[#a78bfa]",
   },
   {
     label: "Новая цель",
     href: "/goals",
     icon: Target,
+    variant: "outline" as const,
     colorClass: "text-purple-400",
-    bgClass: "bg-purple-500/10 hover:bg-purple-500/20 border-purple-500/20",
   },
   {
     label: "Ежедневный обзор",
     href: "/review",
     icon: TrendingUp,
-    colorClass: "text-green-400",
-    bgClass: "bg-green-500/10 hover:bg-green-500/20 border-green-500/20",
+    variant: "outline" as const,
+    colorClass: "text-emerald-400",
   },
   {
-    label: "Добавить тренировку",
-    href: "/health",
-    icon: Dumbbell,
+    label: "Новая привычка",
+    href: "/habits",
+    icon: Repeat,
+    variant: "outline" as const,
     colorClass: "text-orange-400",
-    bgClass: "bg-orange-500/10 hover:bg-orange-500/20 border-orange-500/20",
   },
 ]
 
@@ -42,8 +42,8 @@ export function QuickActions() {
     <FadeIn delay={0.15} className="h-full">
       <Card className="h-full">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Zap className="size-4 text-primary" />
+          <CardTitle className="text-base font-heading flex items-center gap-2">
+            <Zap className="size-4 text-[#8b5cf6]" />
             Быстрые действия
           </CardTitle>
         </CardHeader>
@@ -53,8 +53,8 @@ export function QuickActions() {
             return (
               <Link key={action.href} href={action.href}>
                 <Button
-                  variant="outline"
-                  className={`w-full h-auto py-3 flex-col gap-1.5 border ${action.bgClass} transition-all`}
+                  variant={action.variant}
+                  className="w-full h-auto py-3 flex-col gap-1.5 transition-all"
                 >
                   <Icon className={`size-5 ${action.colorClass}`} />
                   <span className="text-xs font-medium leading-tight text-center">

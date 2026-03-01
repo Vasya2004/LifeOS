@@ -32,7 +32,7 @@ function WeekProgressSection() {
       label: "Задач выполнено",
       value: stats?.totalTasksCompleted ?? 0,
       max: 50,
-      colorClass: "bg-blue-500",
+      colorClass: "bg-[#8b5cf6]",
     },
     {
       label: "Привычек выполнено",

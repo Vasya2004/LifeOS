@@ -1,8 +1,7 @@
 "use client"
 
 import { AppShell } from "@/components/app-shell"
-import { useHabits, useAreas, useStats } from "@/hooks/use-data"
-import { addHabit, toggleHabitEntry, deleteHabit, updateHabit } from "@/lib/store"
+import { useHabits, useAreas, useStats, useCreateHabit, useToggleHabit, useDeleteHabit } from "@/hooks/use-data"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -41,7 +40,7 @@ const WEEKDAYS = [
 
 const ENERGY_TYPES = [
   { value: "physical", label: "Физическая", icon: Zap, color: "#22c55e" },
-  { value: "mental", label: "Ментальная", icon: Brain, color: "#3b82f6" },
+  { value: "mental", label: "Ментальная", icon: Brain, color: "#8b5cf6" },
   { value: "emotional", label: "Эмоциональная", icon: Heart, color: "#ec4899" },
   { value: "creative", label: "Творческая", icon: Sparkles, color: "#8b5cf6" },
 ]
@@ -52,10 +51,13 @@ const FREQUENCIES = [
 ]
 
 export default function HabitsPage() {
-  const { data: habits, mutate } = useHabits()
+  const { data: habits } = useHabits()
   const { data: areas } = useAreas()
   const { data: stats } = useStats()
-  
+  const createHabit = useCreateHabit()
+  const toggleHabit = useToggleHabit()
+  const deleteHabitFn = useDeleteHabit()
+
   const [isOpen, setIsOpen] = useState(false)
   const [targetDays, setTargetDays] = useState<number[]>([1, 2, 3, 4, 5])
 
@@ -92,7 +94,7 @@ export default function HabitsPage() {
         ? [0, 1, 2, 3, 4, 5, 6] 
         : targetDays
 
-      addHabit({
+      createHabit({
         areaId: data.areaId,
         title: data.title,
         description: data.description || "",
@@ -102,9 +104,8 @@ export default function HabitsPage() {
         energyType: data.energyType as "physical" | "mental" | "emotional" | "creative",
         xpReward: data.xpReward,
       })
-      
+
       toast.success("Привычка создана!")
-      mutate()
       setIsOpen(false)
       resetForm()
       setTargetDays([1, 2, 3, 4, 5])
@@ -119,23 +120,20 @@ export default function HabitsPage() {
   const handleToggle = (habit: Habit) => {
     const entry = habit.entries.find(e => e.date === today)
     const newStatus = !(entry?.completed ?? false)
-    
-    toggleHabitEntry(habit.id, today, newStatus)
-    
+
+    toggleHabit(habit.id, today, newStatus)
+
     if (newStatus) {
       toast.success(`+${habit.xpReward || 10} XP за привычку!`, {
         icon: <Trophy className="size-4 text-warning" />
       })
     }
-    
-    mutate()
   }
 
   const handleDelete = (id: string) => {
     if (confirm("Удалить привычку?")) {
-      deleteHabit(id)
+      deleteHabitFn(id)
       toast.success("Привычка удалена")
-      mutate()
     }
   }
 

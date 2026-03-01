@@ -1,10 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { Plus } from "lucide-react"
+import { Plus, Flame } from "lucide-react"
 import { FadeIn } from "@/components/animations"
 import { useTodaysTasks } from "@/hooks/modules/use-tasks"
-import type { Task } from "@/lib/types"
+import { useHabits, useToggleHabit } from "@/hooks/modules/use-habits"
+import type { Task, Habit } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
 const MONTHS_SHORT = [
   "янв", "фев", "мар", "апр", "май", "июн",
@@ -16,49 +18,50 @@ const DAYS_RU = [
   "Среда", "Четверг", "Пятница", "Суббота",
 ]
 
-const TASK_COLORS = [
-  "#a78bfa", // purple
-  "#60a5fa", // blue
-  "#34d399", // green
-  "#f472b6", // pink
-  "#fb923c", // orange
-  "#38bdf8", // cyan
-]
+function todayStr() {
+  return new Date().toISOString().slice(0, 10)
+}
 
-function formatTime(time?: string) {
-  if (!time) return null
-  return time.slice(0, 5)
+function isScheduledToday(habit: Habit): boolean {
+  const dow = new Date().getDay()
+  if (habit.frequency === "daily") return true
+  if (habit.frequency === "weekly" || habit.frequency === "custom") {
+    return habit.targetDays.includes(dow)
+  }
+  return true
 }
 
 export function DayWidget() {
   const tasks = useTodaysTasks()
+  const { data: habits } = useHabits()
+  const toggleHabit = useToggleHabit()
+
   const now = new Date()
   const day = now.getDate()
   const month = now.getMonth()
   const dayOfWeek = now.getDay()
+  const today = todayStr()
 
-  const pending = tasks.filter((t: Task) => t.status !== "completed")
-  const preview = pending.slice(0, 3)
-  const totalCount = tasks.length
+  const completedTaskCount = tasks.filter((t: Task) => t.status === "completed").length
+  const totalTaskCount = tasks.length
+
+  const todaysHabits = (habits ?? []).filter(isScheduledToday).slice(0, 5)
+  const completedHabits = todaysHabits.filter(
+    (h: Habit) => h.entries?.some((e) => e.date === today && e.completed)
+  )
 
   return (
     <FadeIn delay={0.15} className="h-full">
       <div
-        className="relative flex h-full flex-col overflow-hidden rounded-2xl p-4"
-        style={{
-          background: "linear-gradient(160deg, #0e1420 0%, #080d16 100%)",
-          boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.5)",
-        }}
+        className="relative flex h-full flex-col overflow-hidden rounded-xl p-4 bg-slate-900/60 border border-white/[0.07] shadow-md"
       >
         <div className="flex gap-3">
 
-          {/* ── Left panel ── */}
-          <div
-            className="relative flex w-[42%] flex-shrink-0 flex-col justify-between overflow-hidden rounded-xl px-3 py-4"
-            style={{
-              background: "linear-gradient(160deg, #141e30 0%, #0c1522 100%)",
-              minHeight: 180,
-            }}
+          {/* ── Left panel — date (links to /tasks) ── */}
+          <Link
+            href="/tasks"
+            className="relative flex w-[42%] flex-shrink-0 flex-col justify-between overflow-hidden rounded-xl px-3 py-4 bg-white/[0.04] hover:bg-white/[0.07] transition-colors"
+            style={{ minHeight: 180 }}
           >
             {/* Blue glow at bottom */}
             <div
@@ -70,72 +73,103 @@ export function DayWidget() {
               }}
             />
 
-            {/* Date */}
-            <div className="relative">
+            {/* Date + task count badge */}
+            <div className="relative flex items-start justify-between">
               <p className="text-4xl font-black leading-none tracking-tight text-white">
                 {MONTHS_SHORT[month].charAt(0).toUpperCase() + MONTHS_SHORT[month].slice(1)}{" "}
                 {day}
               </p>
-            </div>
-
-            {/* Day + count */}
-            <div className="relative">
-              <p className="text-sm font-semibold text-white">{DAYS_RU[dayOfWeek]}</p>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
-                {totalCount} {totalCount === 1 ? "задача" : totalCount < 5 ? "задачи" : "задач"}
-              </p>
-            </div>
-          </div>
-
-          {/* ── Right panel ── */}
-          <div className="flex flex-1 flex-col py-1">
-
-            {/* Header */}
-            <p
-              className="mb-2 text-[10px] font-semibold uppercase tracking-[0.15em]"
-              style={{ color: "rgba(255,255,255,0.35)" }}
-            >
-              Предстоящее
-            </p>
-
-            {/* Task list */}
-            <div className="flex flex-1 flex-col gap-2">
-              {preview.length === 0 ? (
-                <p className="text-xs italic" style={{ color: "rgba(255,255,255,0.25)" }}>
-                  Задач нет
-                </p>
-              ) : (
-                preview.map((task: Task, i: number) => (
-                  <div key={task.id} className="flex items-start gap-2">
-                    {/* Colored left bar */}
-                    <div
-                      className="mt-0.5 w-0.5 self-stretch rounded-full flex-shrink-0"
-                      style={{
-                        background: TASK_COLORS[i % TASK_COLORS.length],
-                        minHeight: 28,
-                      }}
-                    />
-                    <div className="min-w-0">
-                      <p
-                        className="truncate text-xs font-medium leading-tight text-white"
-                        title={task.title}
-                      >
-                        {task.title}
-                      </p>
-                      <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>
-                        {formatTime(task.scheduledTime)
-                          ? formatTime(task.scheduledTime)
-                          : "Без времени"}
-                      </p>
-                    </div>
-                  </div>
-                ))
+              {totalTaskCount > 0 && (
+                <div
+                  className="flex size-5 items-center justify-center rounded-full text-[10px] font-bold text-white shrink-0"
+                  style={{ background: "rgba(99,102,241,0.8)" }}
+                >
+                  {totalTaskCount > 9 ? "9+" : totalTaskCount}
+                </div>
               )}
             </div>
 
-            {/* Add button — прижат к низу */}
+            {/* Day + task progress */}
+            <div className="relative">
+              <p className="text-sm font-semibold text-white">{DAYS_RU[dayOfWeek]}</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
+                {totalTaskCount === 0
+                  ? "Задач нет"
+                  : completedTaskCount > 0
+                    ? `${completedTaskCount}/${totalTaskCount} задач`
+                    : `${totalTaskCount} ${totalTaskCount === 1 ? "задача" : totalTaskCount < 5 ? "задачи" : "задач"}`
+                }
+              </p>
+            </div>
+          </Link>
+
+          {/* ── Right panel — habits ── */}
+          <div className="flex flex-1 flex-col py-1">
+
+            {/* Header */}
+            <div className="flex items-center justify-between mb-2">
+              <p
+                className="text-[10px] font-semibold uppercase tracking-[0.15em]"
+                style={{ color: "rgba(255,255,255,0.35)" }}
+              >
+                Привычки
+              </p>
+              {todaysHabits.length > 0 && (
+                <span className="text-[10px] font-medium" style={{ color: "rgba(255,255,255,0.40)" }}>
+                  {completedHabits.length}/{todaysHabits.length}
+                </span>
+              )}
+            </div>
+
+            {/* Habit list */}
+            <div className="flex flex-1 flex-col gap-1.5">
+              {todaysHabits.length === 0 ? (
+                <p className="text-xs italic" style={{ color: "rgba(255,255,255,0.25)" }}>
+                  Привычек нет
+                </p>
+              ) : (
+                todaysHabits.map((habit: Habit) => {
+                  const done = habit.entries?.some((e) => e.date === today && e.completed) ?? false
+                  return (
+                    <button
+                      key={habit.id}
+                      onClick={() => toggleHabit(habit.id, today, !done)}
+                      className="flex items-center gap-2 rounded-lg px-2 py-1 text-left transition-all hover:bg-white/[0.06] active:scale-[0.98]"
+                    >
+                      {/* Completion dot */}
+                      <div
+                        className={cn(
+                          "flex size-4 shrink-0 items-center justify-center rounded-full border transition-all",
+                          done
+                            ? "border-emerald-400/70 bg-emerald-400/20"
+                            : "border-white/20 bg-transparent"
+                        )}
+                      >
+                        {done && (
+                          <div className="size-1.5 rounded-full bg-emerald-400" />
+                        )}
+                      </div>
+                      <span
+                        className="flex-1 truncate text-xs font-medium leading-tight"
+                        style={{ color: done ? "rgba(255,255,255,0.30)" : "rgba(255,255,255,0.85)" }}
+                      >
+                        {habit.title}
+                      </span>
+                      {habit.streak > 0 && !done && (
+                        <div className="flex items-center gap-0.5 shrink-0">
+                          <Flame className="size-2.5 text-orange-400" />
+                          <span className="text-[9px] text-orange-400 font-medium">{habit.streak}</span>
+                        </div>
+                      )}
+                    </button>
+                  )
+                })
+              )}
+            </div>
+
+            {/* Go to habits */}
             <div className="mt-auto pt-3 flex justify-end">
-              <Link href="/tasks">
+              <Link href="/habits">
                 <button
                   className="flex size-7 items-center justify-center rounded-full transition-opacity hover:opacity-80"
                   style={{

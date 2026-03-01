@@ -1,10 +1,70 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
+// ─── API rate limiting (cookie-based, Edge-compatible) ─────────────────────
+// Protects all /api routes: max 120 requests per minute per IP.
+const API_LIMIT = 120
+const API_WINDOW_MS = 60_000
+
+function apiRateLimit(request: NextRequest): NextResponse | null {
+  if (!request.nextUrl.pathname.startsWith('/api')) return null
+
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown'
+
+  // Edge-safe "hash": take last 16 chars of btoa(ip)
+  const cookieName = `rl_${btoa(ip).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16)}`
+  const raw = request.cookies.get(cookieName)?.value
+  const now = Date.now()
+
+  let count = 1
+  let windowStart = now
+
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as { count: number; windowStart: number }
+      if (now - parsed.windowStart < API_WINDOW_MS) {
+        count = parsed.count + 1
+        windowStart = parsed.windowStart
+      }
+    } catch { /* ignore malformed cookie */ }
+  }
+
+  const remainingMs = windowStart + API_WINDOW_MS - now
+
+  if (count > API_LIMIT) {
+    return NextResponse.json(
+      { error: 'rate_limit_exceeded' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(Math.ceil(remainingMs / 1000)),
+          'X-RateLimit-Limit': String(API_LIMIT),
+          'X-RateLimit-Remaining': '0',
+        },
+      },
+    )
+  }
+
+  // Attach updated counter to the response cookie
+  const next = NextResponse.next({ request })
+  next.cookies.set(cookieName, JSON.stringify({ count, windowStart }), {
+    httpOnly: true,
+    sameSite: 'strict',
+    maxAge: Math.ceil(API_WINDOW_MS / 1000),
+    path: '/api',
   })
+  return next
+}
+
+export async function middleware(request: NextRequest) {
+  // API rate limiting — runs before everything else
+  const rateLimitResponse = apiRateLimit(request)
+  if (rateLimitResponse?.status === 429) return rateLimitResponse
+
+  let supabaseResponse = rateLimitResponse ?? NextResponse.next({ request })
 
   const isGuestMode = request.cookies.get('lifeos_guest_mode')?.value === 'true'
   const isAuthRoute = request.nextUrl.pathname.startsWith('/auth')

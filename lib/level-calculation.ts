@@ -25,7 +25,7 @@ export const TIER_CONFIGS: TierConfig[] = [
     index: 2,
     minLevel: 5,
     color: "hsl(210, 80%, 55%)",
-    gradient: "from-blue-400 to-blue-600",
+    gradient: "from-[#a78bfa] to-[#7c3aed]",
   },
   {
     name: "Адепт",
