@@ -12,8 +12,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Use /tmp locally to avoid iCloud interference; use default .next on Vercel
-  distDir: process.env.VERCEL ? '.next' : '/tmp/lifeos-next',
+  // Use temp dir locally to avoid iCloud interference; use default .next on Vercel
+  distDir: process.env.VERCEL ? '.next' : (process.platform === 'win32' ? 'C:/Temp/lifeos-next' : '/tmp/lifeos-next'),
 }
 
 export default withBundleAnalyzer(nextConfig)
