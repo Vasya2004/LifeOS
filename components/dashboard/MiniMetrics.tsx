@@ -57,8 +57,8 @@ const MODULE_CONFIG = {
     icon: Target,
     href: "/goals",
     colorClass: "text-sky-400",
-    bgClass: "bg-[#8b5cf6]/10 border-[#8b5cf6]/20 hover:bg-[#8b5cf6]/18",
-    ringClass: "ring-[#8b5cf6]/40",
+    bgClass: "bg-[#3b82f6]/10 border-[#3b82f6]/20 hover:bg-[#3b82f6]/18",
+    ringClass: "ring-[#3b82f6]/40",
   },
 } satisfies Record<ModuleKey, {
   label: string
@@ -188,7 +188,7 @@ function ModuleDetailPanel({
                   </div>
                   <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full rounded-full transition-all bg-[#8b5cf6]"
+                      className="h-full rounded-full transition-all bg-[#3b82f6]"
                       style={{ width: `${goal.progress}%` }}
                     />
                   </div>
@@ -213,7 +213,7 @@ function ModuleDetailPanel({
                     <button
                       onClick={() => handleComplete(task.id)}
                       disabled={isDone || completing === task.id}
-                      className="shrink-0 rounded-full p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6]"
+                      className="shrink-0 rounded-full p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]"
                       aria-label={isDone ? "Выполнено" : "Отметить как выполненное"}
                     >
                       {isDone ? (
@@ -221,7 +221,7 @@ function ModuleDetailPanel({
                       ) : (
                         <Circle className={cn(
                           "size-4 text-muted-foreground hover:text-indigo-400 transition-colors",
-                          completing === task.id && "animate-spin text-[#8b5cf6]"
+                          completing === task.id && "animate-spin text-[#3b82f6]"
                         )} />
                       )}
                     </button>

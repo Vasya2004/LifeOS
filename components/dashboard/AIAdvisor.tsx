@@ -40,8 +40,8 @@ const TYPE_CONFIG: Record<
   },
   tip: {
     icon: Lightbulb,
-    cardClass: "border-[#8b5cf6]/20 bg-[#8b5cf6]/5",
-    iconClass: "text-[#8b5cf6]",
+    cardClass: "border-primary/20 bg-primary/5",
+    iconClass: "text-primary",
     badgeLabel: "Идея",
   },
   positive: {
@@ -55,7 +55,7 @@ const TYPE_CONFIG: Record<
 const PRIORITY_COLOR: Record<string, string> = {
   critical: "text-red-400 bg-red-400/10 border-red-400/20",
   high:     "text-orange-400 bg-orange-400/10 border-orange-400/20",
-  medium:   "text-indigo-400 bg-indigo-400/10 border-indigo-400/20",
+  medium:   "text-blue-400 bg-indigo-400/10 border-indigo-400/20",
   low:      "text-slate-400 bg-slate-400/10 border-slate-400/20",
 }
 
@@ -135,12 +135,12 @@ function SuggestionRow({
       className={cn(
         "w-full flex items-center gap-3 p-2.5 rounded-lg border text-left transition-all",
         selected
-          ? "border-[#8b5cf6]/40 bg-[#8b5cf6]/8"
+          ? "border-primary/40 bg-primary/10"
           : "border-transparent bg-slate-900/30 hover:border-slate-700 hover:bg-slate-800/30"
       )}
     >
       {selected ? (
-        <CheckSquare className="size-4 shrink-0 text-indigo-400" />
+        <CheckSquare className="size-4 shrink-0 text-primary" />
       ) : (
         <Square className="size-4 shrink-0 text-muted-foreground" />
       )}
@@ -213,11 +213,11 @@ function DayPlanSection() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2 }}
-          className="rounded-xl border border-dashed border-[#8b5cf6]/30 bg-[#8b5cf6]/5 p-4"
+          className="rounded-xl border border-dashed border-primary/25 bg-primary/5 p-4"
         >
           <div className="flex items-start gap-3">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#8b5cf6]/15">
-              <CalendarPlus className="size-4 text-indigo-400" />
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <CalendarPlus className="size-4 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium">Составить план на день</p>
@@ -227,7 +227,7 @@ function DayPlanSection() {
               <Button
                 size="sm"
                 variant="outline"
-                className="mt-3 h-7 text-xs gap-1.5 border-[#8b5cf6]/30 text-indigo-400 hover:border-[#8b5cf6]/60 hover:text-indigo-300"
+                className="mt-3 h-7 text-xs gap-1.5 border-primary/30 text-primary hover:border-primary/60"
                 onClick={handleGenerate}
               >
                 <Zap className="size-3" />
@@ -245,7 +245,7 @@ function DayPlanSection() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2 }}
-          className="rounded-xl border border-[#8b5cf6]/20 bg-card p-4 space-y-3"
+          className="rounded-xl border border-primary/20 bg-card p-4 space-y-3"
         >
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold">Выбери задачи для плана</p>

@@ -27,6 +27,7 @@ import {
   TrendingUp,
   BookOpen,
   Settings,
+  User,
   Wallet,
   Heart,
   Sparkles,
@@ -101,11 +102,17 @@ function UserStats() {
   return (
     <div className="px-4 py-3 border-t border-sidebar-border">
       <div className="flex items-center gap-2.5 mb-2.5">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/15 border border-primary/25 text-xs font-bold text-primary">
+        <Link
+          href="/profile"
+          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/15 border border-primary/25 text-xs font-bold text-primary hover:bg-primary/25 hover:border-primary/50 transition-colors"
+          title="Профиль"
+        >
           {name.charAt(0).toUpperCase()}
-        </div>
+        </Link>
         <div className="min-w-0">
-          <p className="text-sm font-semibold truncate text-sidebar-foreground">{name}</p>
+          <Link href="/profile" className="hover:text-primary transition-colors">
+            <p className="text-sm font-semibold truncate text-sidebar-foreground">{name}</p>
+          </Link>
           <p className="text-[11px] text-sidebar-foreground/50">Ур. {level} · {levelName}</p>
         </div>
       </div>
@@ -351,6 +358,22 @@ function NavContent({
           </p>
         )}
         <Link
+          href="/profile"
+          onClick={onItemClick}
+          className={linkClass("/profile")}
+          title={collapsed ? "Профиль" : undefined}
+        >
+          <User className="size-4 shrink-0" />
+          {!collapsed && (
+            <>
+              <span className="flex-1">Профиль</span>
+              {isActive("/profile") && (
+                <span className="w-[3px] h-4 rounded-full bg-sidebar-primary/70 shrink-0" />
+              )}
+            </>
+          )}
+        </Link>
+        <Link
           href="/settings"
           onClick={onItemClick}
           className={linkClass("/settings")}
@@ -498,15 +521,17 @@ const COLLAPSED_KEY = "lifeos_sidebar_collapsed"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = React.useState(false)
+  const [initialized, setInitialized] = React.useState(false)
   const { resolvedTheme } = useTheme()
   const logoSrc = resolvedTheme === "dark" ? "/logo-light.svg" : "/logo-dark.svg"
 
-  // Restore collapse state from localStorage
+  // Restore collapse state from localStorage — delay transitions until after initial snap
   React.useEffect(() => {
     try {
       const stored = localStorage.getItem(COLLAPSED_KEY)
       if (stored === "true") setCollapsed(true)
     } catch {}
+    requestAnimationFrame(() => setInitialized(true))
   }, [])
 
   const handleToggleCollapse = () => {
@@ -532,7 +557,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar — animates between w-64 and w-14 */}
       <aside
         className={cn(
-          "group relative hidden shrink-0 border-r border-border bg-sidebar md:block transition-all duration-300 ease-in-out",
+          "group relative hidden shrink-0 border-r border-border bg-sidebar md:block",
+          initialized && "transition-all duration-300 ease-in-out",
           collapsed ? "w-14" : "w-64"
         )}
         onWheel={(e) => {

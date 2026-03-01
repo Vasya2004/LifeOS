@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 /**
- * LifeOS Button - Deep Purple Theme
+ * LifeOS Button - Cosmic Blue Theme
  * Primary: #8b5cf6
  */
 

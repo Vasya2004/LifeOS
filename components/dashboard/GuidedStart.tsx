@@ -13,9 +13,9 @@ import { Target, CheckSquare, Repeat, ArrowRight, X, Sparkles, Info } from "luci
 const GUIDE_STEPS = [
   {
     icon: Target,
-    color: "#8b5cf6",
-    bg: "bg-violet-500/10",
-    border: "border-violet-500/20",
+    color: "#3b82f6",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/20",
     step: "1",
     title: "Поставь цель",
     desc: "Определи, чего хочешь достичь. Это даст направление всем задачам.",
@@ -25,8 +25,8 @@ const GUIDE_STEPS = [
   {
     icon: CheckSquare,
     color: "#6366f1",
-    bg: "bg-[#8b5cf6]/10",
-    border: "border-[#8b5cf6]/20",
+    bg: "bg-[#3b82f6]/10",
+    border: "border-[#3b82f6]/20",
     step: "2",
     title: "Добавь первую задачу",
     desc: "Разбей цель на конкретный шаг. Выполни его сегодня — получи XP.",

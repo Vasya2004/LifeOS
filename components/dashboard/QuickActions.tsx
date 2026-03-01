@@ -12,14 +12,14 @@ const ACTIONS = [
     href: "/tasks/new",
     icon: CheckSquare,
     variant: "outline" as const,
-    colorClass: "text-[#a78bfa]",
+    colorClass: "text-[#60a5fa]",
   },
   {
     label: "Новая цель",
     href: "/goals",
     icon: Target,
     variant: "outline" as const,
-    colorClass: "text-purple-400",
+    colorClass: "text-blue-400",
   },
   {
     label: "Ежедневный обзор",
@@ -43,7 +43,7 @@ export function QuickActions() {
       <Card className="h-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-heading flex items-center gap-2">
-            <Zap className="size-4 text-[#8b5cf6]" />
+            <Zap className="size-4 text-[#3b82f6]" />
             Быстрые действия
           </CardTitle>
         </CardHeader>

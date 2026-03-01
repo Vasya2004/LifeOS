@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 /**
- * LifeOS Badge - Deep Purple Theme
+ * LifeOS Badge - Cosmic Blue Theme
  */
 
 const badgeVariants = cva(
@@ -23,7 +23,7 @@ const badgeVariants = cva(
         // Destructive
         destructive: 'bg-red-500/15 text-red-400 border border-red-500/20',
         
-        // Primary (deep purple)
+        // Primary (cosmic blue)
         primary: 'bg-[#8b5cf6]/15 text-[#8b5cf6] border border-[#8b5cf6]/20',
         
         // Gamification

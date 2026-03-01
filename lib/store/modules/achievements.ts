@@ -43,7 +43,7 @@ const defaultCollections: Omit<AchievementCollection, "id" | "userId">[] = [
   { name: "Избранное", description: "Особо значимые достижения", icon: "heart", color: "#ec4899", isDefault: true, sortOrder: 1, createdAt: now() },
   { name: "Капсулы времени", description: "Достижения с отложенным открытием", icon: "clock", color: "#f59e0b", isDefault: true, sortOrder: 2, createdAt: now() },
   { name: "Микро-победы", description: "Маленькие, но важные шаги", icon: "zap", color: "#22c55e", isDefault: true, sortOrder: 3, createdAt: now() },
-  { name: "Прорывы", description: "Преодоление страхов и лимитов", icon: "star", color: "#8b5cf6", isDefault: true, sortOrder: 4, createdAt: now() },
+  { name: "Прорывы", description: "Преодоление страхов и лимитов", icon: "star", color: "#3b82f6", isDefault: true, sortOrder: 4, createdAt: now() },
 ]
 
 const defaultStats: Omit<AchievementStats, "id" | "userId"> = {
@@ -479,8 +479,8 @@ function getBadgeIconForType(type: AchievementType): string {
 function getBadgeColorForType(type: AchievementType): string {
   switch (type) {
     case "micro": return "#22c55e"
-    case "macro": return "#8b5cf6"
-    case "breakthrough": return "#8b5cf6"
+    case "macro": return "#3b82f6"
+    case "breakthrough": return "#3b82f6"
     case "moment": return "#f59e0b"
     default: return "#6366f1"
   }

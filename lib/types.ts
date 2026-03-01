@@ -502,10 +502,10 @@ export const FINANCE_CATEGORIES = {
 
 export const LIFE_AREAS = [
   { id: 'health', name: 'Health & Fitness', icon: 'heart', color: '#22c55e' },
-  { id: 'career', name: 'Career & Business', icon: 'briefcase', color: '#8b5cf6' },
+  { id: 'career', name: 'Career & Business', icon: 'briefcase', color: '#3b82f6' },
   { id: 'finance', name: 'Finance & Wealth', icon: 'wallet', color: '#eab308' },
   { id: 'relationships', name: 'Relationships', icon: 'users', color: '#ec4899' },
-  { id: 'growth', name: 'Personal Growth', icon: 'brain', color: '#8b5cf6' },
+  { id: 'growth', name: 'Personal Growth', icon: 'brain', color: '#3b82f6' },
   { id: 'recreation', name: 'Recreation & Fun', icon: 'gamepad', color: '#f97316' },
   { id: 'environment', name: 'Environment', icon: 'home', color: '#14b8a6' },
   { id: 'spirituality', name: 'Spirituality', icon: 'sparkles', color: '#6366f1' },
@@ -692,9 +692,9 @@ export const SKILL_TIERS = {
   3: {
     title: 'Практик',
     titleEn: 'Practitioner',
-    color: 'text-[#8b5cf6]',
-    borderColor: 'border-[#8b5cf6]',
-    bgColor: 'bg-[#8b5cf6]/10',
+    color: 'text-[#3b82f6]',
+    borderColor: 'border-[#3b82f6]',
+    bgColor: 'bg-[#3b82f6]/10',
     glowEffect: 'glow',
     requiresCertificate: false
   },
@@ -759,10 +759,10 @@ export const SKILL_ACTIVITY_XP = {
 
 // Skill categories
 export const SKILL_CATEGORIES = [
-  { id: 'technical', name: 'Технические', icon: 'code', color: '#8b5cf6' },
+  { id: 'technical', name: 'Технические', icon: 'code', color: '#3b82f6' },
   { id: 'creative', name: 'Творческие', icon: 'palette', color: '#ec4899' },
   { id: 'physical', name: 'Физические', icon: 'dumbbell', color: '#22c55e' },
-  { id: 'mental', name: 'Ментальные', icon: 'brain', color: '#8b5cf6' },
+  { id: 'mental', name: 'Ментальные', icon: 'brain', color: '#3b82f6' },
   { id: 'social', name: 'Социальные', icon: 'users', color: '#f97316' },
   { id: 'professional', name: 'Профессиональные', icon: 'briefcase', color: '#14b8a6' },
   { id: 'languages', name: 'Языки', icon: 'languages', color: '#eab308' },

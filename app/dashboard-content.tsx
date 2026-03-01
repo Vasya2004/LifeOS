@@ -19,6 +19,24 @@ import { useAreas } from "@/hooks/modules/use-areas"
 import { useQuests } from "@/hooks"
 import { cn } from "@/lib/utils"
 
+// Row 1: Профиль + Календарь (выровнены по высоте)
+function ProfileCalendarRow() {
+  return (
+    <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[1fr_1fr]">
+      <FadeIn className="h-full">
+        <div className="h-full">
+          <HeroSection />
+        </div>
+      </FadeIn>
+      <FadeIn delay={0.05} className="h-full">
+        <div className="h-full">
+          <DayWidget />
+        </div>
+      </FadeIn>
+    </div>
+  )
+}
+
 function useShowOnboarding() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
   const { data: areas, isLoading: areasLoading } = useAreas()
@@ -73,8 +91,8 @@ export default function DashboardContent() {
       {/* Guided start — shows only for empty accounts */}
       <GuidedStart />
 
-      {/* Row 1: Профиль */}
-      <HeroSection />
+      {/* Row 1: Профиль + Календарь */}
+      <ProfileCalendarRow />
 
       {/* Row 2: Задачи сегодня + Ежедневные квесты */}
       <FocusRow />
@@ -85,11 +103,8 @@ export default function DashboardContent() {
         <QuickActions />
       </div>
 
-      {/* Row 4: Статус модулей + Календарь */}
-      <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[2fr_1fr]">
-        <MiniMetrics />
-        <DayWidget />
-      </div>
+      {/* Row 4: Статус модулей */}
+      <MiniMetrics />
 
       {/* Row 5: AI Наставник */}
       <AIAdvisor />

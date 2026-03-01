@@ -62,7 +62,7 @@ export function SyncStatusCompact() {
     <div className="flex items-center gap-2">
       <div className={cn(
         "w-2 h-2 rounded-full",
-        status === 'syncing' && "bg-[#8b5cf6] animate-pulse",
+        status === 'syncing' && "bg-[#3b82f6] animate-pulse",
         status === 'offline' && "bg-yellow-500",
         status === 'error' && "bg-red-500",
         status === 'conflict' && "bg-orange-500",

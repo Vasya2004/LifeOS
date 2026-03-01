@@ -3,18 +3,18 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 /**
- * LifeOS Card - Deep Purple Theme
+ * LifeOS Card - Cosmic Blue Theme
  * Чистые тёмные карточки без glassmorphism
  */
 
 const cardVariants = cva(
-  'rounded-xl border border-white/[0.08] bg-[#0a0a0f] transition-colors duration-200',
+  'rounded-xl border border-white/[0.08] bg-card transition-colors duration-200',
   {
     variants: {
       variant: {
         default: '',
         hover: 'hover:border-white/[0.15]',
-        interactive: 'cursor-pointer hover:border-white/[0.15] hover:bg-[#121218]',
+        interactive: 'cursor-pointer hover:border-white/[0.15] hover:bg-white/[0.04]',
       },
     },
     defaultVariants: {

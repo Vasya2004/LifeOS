@@ -55,13 +55,12 @@ export function DayWidget() {
       <div
         className="relative flex h-full flex-col overflow-hidden rounded-xl p-4 bg-slate-900/60 border border-white/[0.07] shadow-md"
       >
-        <div className="flex gap-3">
+        <div className="flex gap-3 h-full">
 
           {/* ── Left panel — date (links to /tasks) ── */}
           <Link
             href="/tasks"
             className="relative flex w-[42%] flex-shrink-0 flex-col justify-between overflow-hidden rounded-xl px-3 py-4 bg-white/[0.04] hover:bg-white/[0.07] transition-colors"
-            style={{ minHeight: 180 }}
           >
             {/* Blue glow at bottom */}
             <div

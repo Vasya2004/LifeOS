@@ -18,7 +18,7 @@ import {
  * 
  * Восстановлено по preview картинкам:
  * - Чистый чёрный фон
- * - Синий primary (#8b5cf6)
+ * - Синий primary (#3b82f6)
  * - Тёмные карточки без glassmorphism
  * - Чистый минималистичный дизайн
  */
@@ -31,7 +31,7 @@ export default function ThemeDemoPage() {
         {/* Logo */}
         <div className="p-4">
           <div className="flex items-center gap-2 px-3 py-2">
-            <div className="w-8 h-8 rounded-lg bg-[#8b5cf6] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#3b82f6] flex items-center justify-center">
               <Target className="w-5 h-5 text-white" />
             </div>
             <span className="text-lg font-bold text-white">LifeOS</span>
@@ -40,7 +40,7 @@ export default function ThemeDemoPage() {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1">
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#8b5cf6]/12 text-[#8b5cf6] text-sm font-medium">
+          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#3b82f6]/12 text-[#3b82f6] text-sm font-medium">
             <LayoutDashboard className="w-5 h-5" />
             Дашборд
           </a>
@@ -86,8 +86,8 @@ export default function ThemeDemoPage() {
           <Card>
             <CardContent className="p-5">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-[#8b5cf6]/15 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-[#8b5cf6]" />
+                <div className="w-10 h-10 rounded-lg bg-[#3b82f6]/15 flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-[#3b82f6]" />
                 </div>
                 <div>
                   <div className="text-sm text-[#9ca3af]">Опыт (XP)</div>
@@ -95,7 +95,7 @@ export default function ThemeDemoPage() {
                 </div>
               </div>
               <div className="w-full bg-white/[0.08] rounded-full h-1.5">
-                <div className="bg-[#8b5cf6] h-1.5 rounded-full" style={{ width: '10%' }} />
+                <div className="bg-[#3b82f6] h-1.5 rounded-full" style={{ width: '10%' }} />
               </div>
             </CardContent>
           </Card>

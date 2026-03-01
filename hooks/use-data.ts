@@ -1,19 +1,23 @@
 // ============================================
 // USE-DATA - Legacy Re-export
 // ============================================
-// 
-// This file is kept for backward compatibility.
-// All hooks have been moved to the modular structure.
-// 
-// Import from '@/hooks' instead for new code.
+//
+// Оставлен для обратной совместимости. Все хуки перенесены в
+// модульную структуру (hooks/index.ts, hooks/modules/*, hooks/core/*).
+//
+// Для нового кода: импортируйте из '@/hooks' или конкретного модуля,
+// например useGoals из '@/hooks/modules/use-goals'.
+//
+// Легаси-алиасы (useSWRData, useSWRMutation) — deprecated,
+// используйте useOfflineFirst / useOfflineMutation.
 //
 // ============================================
 
 // Re-export everything from the new modular structure
 export * from "./index"
 
-// Legacy aliases for backward compatibility
-export { 
-  useOfflineFirst as useSWRData,
-  useOfflineMutation as useSWRMutation,
-} from "./core/use-offline-first"
+/** @deprecated Use useOfflineFirst from '@/hooks/core/use-offline-first' */
+export { useOfflineFirst as useSWRData } from "./core/use-offline-first"
+
+/** @deprecated Use useOfflineMutation from '@/hooks/core/use-offline-first' */
+export { useOfflineMutation as useSWRMutation } from "./core/use-offline-first"

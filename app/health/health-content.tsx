@@ -1,6 +1,5 @@
 "use client"
 
-import { AppShell } from "@/components/app-shell"
 import { useBodyZones, useBodyZonesStats, useMedicalDocuments, useHealthMetrics } from "@/hooks/use-data"
 import { updateBodyZone, addMedicalDocument, deleteMedicalDocument, addHealthMetric } from "@/lib/store"
 import { type BodyZoneStatus, type MedicalDocumentType, HEALTH_METRIC_UNITS, type HealthMetricType } from "@/lib/types"
@@ -669,8 +668,7 @@ export default function HealthContent() {
   const { data: stats } = useBodyZonesStats()
 
   return (
-    <AppShell>
-      <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+    <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
         {/* Header */}
         <FadeIn>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -744,6 +742,5 @@ export default function HealthContent() {
           </Card>
         </FadeIn>
       </div>
-    </AppShell>
   )
 }

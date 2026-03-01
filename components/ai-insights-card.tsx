@@ -29,7 +29,7 @@ const iconsMap: Record<string, any> = {
 const typeStyles = {
     positive: "border-green-500/20 bg-green-500/5 text-green-500 icon-green-500",
     warning: "border-yellow-500/20 bg-yellow-500/5 text-yellow-500 icon-yellow-500",
-    tip: "border-[#8b5cf6]/20 bg-[#8b5cf6]/5 text-[#8b5cf6]",
+    tip: "border-[#3b82f6]/20 bg-[#3b82f6]/5 text-[#3b82f6]",
 }
 
 interface AiInsightsCardProps {

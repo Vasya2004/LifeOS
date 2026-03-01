@@ -301,6 +301,13 @@ export function getCacheKeys(): string[] {
 }
 
 /**
+ * Check if key exists in cache (sync, for hasStore).
+ */
+export function cacheHas(key: string): boolean {
+  return memCache.has(key)
+}
+
+/**
  * Whether IDB has been successfully initialized.
  */
 export function isIDBReady(): boolean {

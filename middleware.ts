@@ -1,6 +1,91 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// ─── Security Headers Configuration ────────────────────────────────────────
+const CSP_DIRECTIVES = {
+  'default-src': ["'self'"],
+  'script-src': [
+    "'self'",
+    "'unsafe-eval'",           // Required for Next.js
+    "'unsafe-inline'",         // Required for inline scripts
+    'https://*.supabase.co',
+    'https://analytics.vercel.app',
+  ],
+  'style-src': [
+    "'self'",
+    "'unsafe-inline'",         // Required for Tailwind/shadcn
+    'https://fonts.googleapis.com',
+  ],
+  'font-src': [
+    "'self'",
+    'https://fonts.gstatic.com',
+    'data:',                   // For inline fonts
+  ],
+  'img-src': [
+    "'self'",
+    'data:',
+    'blob:',
+    'https:',
+    'http:',
+  ],
+  'connect-src': [
+    "'self'",
+    'https://*.supabase.co',
+    'wss://*.supabase.co',     // Realtime
+    'https://analytics.vercel.app',
+  ],
+  'frame-ancestors': ["'none'"],
+  'base-uri': ["'self'"],
+  'form-action': ["'self'"],
+  'upgrade-insecure-requests': [],
+}
+
+// Generate CSP string
+function generateCSP(): string {
+  return Object.entries(CSP_DIRECTIVES)
+    .map(([key, values]) => {
+      if (values.length === 0) return key
+      return `${key} ${values.join(' ')}`
+    })
+    .join('; ')
+}
+
+// Security headers
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  const csp = generateCSP()
+  
+  // CSP
+  response.headers.set('Content-Security-Policy', csp)
+  
+  // Prevent MIME type sniffing
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  
+  // Prevent clickjacking
+  response.headers.set('X-Frame-Options', 'DENY')
+  
+  // XSS Protection (legacy browsers)
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+  
+  // Referrer Policy
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  
+  // Permissions Policy
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), interest-cohort=(), accelerometer=(), gyroscope=(), magnetometer=()'
+  )
+  
+  // HSTS (only in production)
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
+    )
+  }
+  
+  return response
+}
+
 // ─── API rate limiting (cookie-based, Edge-compatible) ─────────────────────
 // Protects all /api routes: max 120 requests per minute per IP.
 const API_LIMIT = 120
@@ -80,17 +165,31 @@ export async function middleware(request: NextRequest) {
       url.pathname = '/'
       return NextResponse.redirect(url)
     }
-    return supabaseResponse
+    return addSecurityHeaders(supabaseResponse)
   }
 
   // Public routes: skip Supabase check
   if (isPublicRoute) {
-    return supabaseResponse
+    return addSecurityHeaders(supabaseResponse)
   }
 
   // ============================================
   // AUTHENTICATION CHECK (Supabase)
   // ============================================
+
+  // Fast path: use short-lived auth cache cookie to skip Supabase on every navigation
+  const AUTH_CACHE_COOKIE = 'lifeos_auth_ok'
+  const AUTH_CACHE_TTL_MS = 60_000 // 60 seconds
+
+  const authCacheRaw = request.cookies.get(AUTH_CACHE_COOKIE)?.value
+  if (authCacheRaw) {
+    try {
+      const { expiresAt } = JSON.parse(authCacheRaw) as { expiresAt: number }
+      if (Date.now() < expiresAt) {
+        return addSecurityHeaders(supabaseResponse)
+      }
+    } catch { /* ignore malformed */ }
+  }
 
   let user = null
 
@@ -128,10 +227,18 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     url.searchParams.set('redirect', request.nextUrl.pathname)
-    return NextResponse.redirect(url)
+    return addSecurityHeaders(NextResponse.redirect(url))
   }
 
-  return supabaseResponse
+  // Cache successful auth for 60 seconds
+  const response = addSecurityHeaders(supabaseResponse)
+  response.cookies.set(AUTH_CACHE_COOKIE, JSON.stringify({ expiresAt: Date.now() + AUTH_CACHE_TTL_MS }), {
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 60,
+    path: '/',
+  })
+  return response
 }
 
 export const config = {

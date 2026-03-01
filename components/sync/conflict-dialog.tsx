@@ -227,7 +227,7 @@ function DiffView({
 
           return (
             <div key={key} className="grid grid-cols-2 gap-2">
-              <div className="p-2 bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 rounded text-sm">
+              <div className="p-2 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded text-sm">
                 <Badge variant="outline" className="mb-1 text-xs">Локальное</Badge>
                 <div className="font-medium">{key}:</div>
                 <div className="text-muted-foreground">{formatValue(localVal)}</div>

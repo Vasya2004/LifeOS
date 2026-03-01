@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 
 /**
- * LifeOS Skeleton Component - Deep Purple Theme
+ * LifeOS Skeleton Component - Cosmic Blue Theme
  * 
  * Плейсхолдер для загрузки контента.
  * Показывает анимированный "скелет" пока данные загружаются.

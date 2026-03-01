@@ -52,6 +52,10 @@ export const KEYS = {
   healthMetrics: "healthMetrics",
   healthProfile: "healthProfile",
   
+  // Profile
+  principles: "principles",
+  characterConfig: "character_config",
+
   // System
   settings: "settings",
   onboarding: "onboarding",

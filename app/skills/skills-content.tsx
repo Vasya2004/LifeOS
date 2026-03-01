@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { AppShell } from "@/components/app-shell"
 import { SkillCard } from "@/components/skill-card"
 import { useSkills, useSkillStats } from "@/hooks/use-data"
 import { Button } from "@/components/ui/button"
@@ -65,8 +64,7 @@ export default function SkillsContent() {
   }
 
   return (
-    <AppShell>
-      <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+    <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
         {/* Header */}
         <FadeIn>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -185,17 +183,17 @@ export default function SkillsContent() {
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-[#8b5cf6]">Практики</span>
+                  <span className="text-[#3b82f6]">Практики</span>
                   <span>{tierDistribution.practitioner}</span>
                 </div>
-                <Progress value={(tierDistribution.practitioner / (skills.length || 1)) * 100} className="h-1.5 bg-gray-800 [&>div]:bg-[#8b5cf6]" />
+                <Progress value={(tierDistribution.practitioner / (skills.length || 1)) * 100} className="h-1.5 bg-gray-800 [&>div]:bg-[#3b82f6]" />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-purple-500">Профи</span>
+                  <span className="text-blue-500">Профи</span>
                   <span>{tierDistribution.pro}</span>
                 </div>
-                <Progress value={(tierDistribution.pro / (skills.length || 1)) * 100} className="h-1.5 bg-gray-800 [&>div]:bg-purple-500" />
+                <Progress value={(tierDistribution.pro / (skills.length || 1)) * 100} className="h-1.5 bg-gray-800 [&>div]:bg-blue-500" />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
@@ -304,6 +302,5 @@ export default function SkillsContent() {
           )}
         </StaggerContainer>
       </div>
-    </AppShell>
   )
 }

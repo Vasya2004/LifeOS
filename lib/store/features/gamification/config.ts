@@ -47,8 +47,8 @@ export const LEVEL_TITLES: Record<number, string> = {
 export const LEVEL_COLORS: Record<number, string> = {
   1: "#6b7280",   // gray
   5: "#22c55e",   // green
-  10: "#8b5cf6",  // blue
-  20: "#8b5cf6",  // purple
+  10: "#3b82f6",  // blue
+  20: "#3b82f6",  // purple
   30: "#f97316",  // orange
   40: "#eab308",  // yellow
   50: "#ef4444",  // red

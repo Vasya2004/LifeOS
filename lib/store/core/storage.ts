@@ -1,8 +1,16 @@
 // ============================================
 // CORE STORAGE - Низкоуровневые операции с хранилищем
+// Единый бэкенд: IndexedDB (idb) или localStorage при fallback.
 // ============================================
 
-import { cacheGet, cacheSet } from "@/lib/store/idb"
+import {
+  cacheGet,
+  cacheSet,
+  cacheRemove,
+  cacheClear,
+  getCacheKeys,
+  cacheHas,
+} from "@/lib/store/idb"
 
 export const STORAGE_PREFIX = "lifeos_"
 
@@ -27,7 +35,7 @@ export function setStore<T>(key: string, value: T) {
  */
 export function removeStore(key: string) {
   if (typeof window === "undefined") return
-  localStorage.removeItem(STORAGE_PREFIX + key)
+  cacheRemove(key)
 }
 
 /**
@@ -35,17 +43,15 @@ export function removeStore(key: string) {
  */
 export function hasStore(key: string): boolean {
   if (typeof window === "undefined") return false
-  return localStorage.getItem(STORAGE_PREFIX + key) !== null
+  return cacheHas(key)
 }
 
 /**
- * Получить все ключи с префиксом
+ * Получить все ключи (без префикса)
  */
 export function getStoreKeys(): string[] {
   if (typeof window === "undefined") return []
-  return Object.keys(localStorage)
-    .filter(k => k.startsWith(STORAGE_PREFIX))
-    .map(k => k.replace(STORAGE_PREFIX, ""))
+  return getCacheKeys()
 }
 
 /**
@@ -53,5 +59,5 @@ export function getStoreKeys(): string[] {
  */
 export function clearStore() {
   if (typeof window === "undefined") return
-  getStoreKeys().forEach(key => removeStore(key))
+  cacheClear()
 }

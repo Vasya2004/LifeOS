@@ -101,3 +101,45 @@ export function deleteRole(id: string) {
   setStore(KEYS.roles, updatedRoles)
   mutateKey(KEYS.roles, updatedRoles)
 }
+
+// ─── Principles ───────────────────────────────────────────────────
+
+export interface Principle {
+  id: string
+  text: string
+  emoji: string
+  order: number
+  createdAt: string
+}
+
+export function getPrinciples(): Principle[] {
+  return getStore(KEYS.principles, [])
+}
+
+export function addPrinciple(p: Pick<Principle, 'text' | 'emoji'>): Principle {
+  const principles = getPrinciples()
+  const newPrinciple: Principle = {
+    ...p,
+    id: genId(),
+    order: principles.length,
+    createdAt: now(),
+  }
+  const updated = [...principles, newPrinciple]
+  setStore(KEYS.principles, updated)
+  mutateKey(KEYS.principles, updated)
+  return newPrinciple
+}
+
+export function updatePrinciple(id: string, updates: Partial<Pick<Principle, 'text' | 'emoji' | 'order'>>) {
+  const principles = getPrinciples()
+  const updated = principles.map(p => p.id === id ? { ...p, ...updates } : p)
+  setStore(KEYS.principles, updated)
+  mutateKey(KEYS.principles, updated)
+}
+
+export function deletePrinciple(id: string) {
+  const principles = getPrinciples()
+  const updated = principles.filter(p => p.id !== id).map((p, i) => ({ ...p, order: i }))
+  setStore(KEYS.principles, updated)
+  mutateKey(KEYS.principles, updated)
+}

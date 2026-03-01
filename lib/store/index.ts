@@ -204,7 +204,12 @@ export {
   updateRole,
   deleteRole,
   getRolesByArea,
+  getPrinciples,
+  addPrinciple,
+  updatePrinciple,
+  deletePrinciple,
 } from "./features/identity"
+export type { Principle } from "./features/identity"
 
 // -------- FINANCE --------
 export {

@@ -7,9 +7,9 @@ import { Plus, CheckSquare, Target, Repeat } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const ACTIONS = [
-  { label: "Задача", href: "/tasks", icon: CheckSquare, color: "bg-[#8b5cf6] hover:bg-[#7c3aed]" },
-  { label: "Цель",   href: "/goals",  icon: Target,      color: "bg-[#a78bfa] hover:bg-[#8b5cf6]" },
-  { label: "Привычка", href: "/habits", icon: Repeat,    color: "bg-emerald-500 hover:bg-emerald-400" },
+  { label: "Задача",   href: "/tasks",  icon: CheckSquare, color: "bg-[#8b5cf6] hover:bg-[#7c3aed]" },
+  { label: "Цель",     href: "/goals",  icon: Target,      color: "bg-[#a78bfa] hover:bg-[#8b5cf6]" },
+  { label: "Привычка", href: "/habits", icon: Repeat,      color: "bg-emerald-500 hover:bg-emerald-400" },
 ]
 
 export function FloatingActions() {

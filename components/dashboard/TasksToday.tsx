@@ -31,7 +31,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   critical: "bg-red-500/15 text-red-400 border-red-500/20",
   high: "bg-orange-500/15 text-orange-400 border-orange-500/20",
   medium: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20",
-  low: "bg-[#8b5cf6]/15 text-[#a78bfa] border-[#8b5cf6]/20",
+  low: "bg-slate-500/15 text-slate-400 border-slate-500/20",
 }
 
 const PRIORITY_LABELS: Record<string, string> = {
@@ -87,7 +87,7 @@ function TaskRow({
         <button
           onClick={handleComplete}
           disabled={isDone || completing}
-          className="flex-shrink-0 p-1.5 -m-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6]"
+          className="flex-shrink-0 p-1.5 -m-1.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           aria-label={isDone ? "Задача выполнена" : "Отметить как выполненную"}
         >
           {isDone ? (
@@ -95,8 +95,8 @@ function TaskRow({
           ) : (
             <Circle
               className={cn(
-                "size-5 text-[#9ca3af] hover:text-[#8b5cf6] transition-colors",
-                completing && "animate-spin text-[#8b5cf6]"
+                "size-5 text-[#9ca3af] hover:text-primary transition-colors",
+                completing && "animate-spin text-primary"
               )}
             />
           )}
@@ -159,7 +159,7 @@ export function TasksToday() {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Sword className="size-4 text-[#8b5cf6]" />
+            <Sword className="size-4 text-primary" />
             Сейчас в фокусе
           </CardTitle>
         </CardHeader>
@@ -175,7 +175,7 @@ export function TasksToday() {
       <Card className="border-white/[0.08]">
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sword className="size-4 text-[#8b5cf6]" />
+            <Sword className="size-4 text-primary" />
             <CardTitle className="text-base">Сейчас в фокусе</CardTitle>
             {totalCount > 0 && (
               <span className="text-xs text-[#9ca3af]">
@@ -193,8 +193,8 @@ export function TasksToday() {
         <CardContent className="space-y-2">
           {tasks.length === 0 ? (
             <div className="flex flex-col items-center py-8 gap-4">
-              <div className="flex size-12 items-center justify-center rounded-full bg-[#8b5cf6]/10">
-                <Sword className="size-6 text-[#8b5cf6]/60" />
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                <Sword className="size-6 text-primary/60" />
               </div>
               <div className="text-center space-y-1">
                 <p className="text-sm font-medium text-white">Фокус свободен!</p>

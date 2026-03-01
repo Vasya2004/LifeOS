@@ -9,21 +9,21 @@
    Цвета из preview:
    - Фон: #000000 (чистый чёрный)
    - Карточки: #0a0a0f (очень тёмный)
-   - Primary: #8b5cf6 (deep purple)
+   - Primary: #3b82f6 (cosmic blue)
    - Границы: rgba(255,255,255,0.08)
    - Текст: белый / серый #9ca3af
    ═════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
+  --background: #050814;
+  --foreground: #f9fafb;
   
-  /* Primary - DEEP PURPLE */
+  /* Primary - COSMIC VIOLET */
   --primary: #8b5cf6;
-  --primary-foreground: #ffffff;
+  --primary-foreground: #f9fafb;
   
   /* Cards - тёмные solid */
-  --card: #0a0a0f;
+  --card: #0b1020;
   --card-foreground: #ffffff;
   
   --popover: #0a0a0f;
@@ -38,14 +38,14 @@
   --muted-foreground: #9ca3af;
   
   /* Borders */
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.08);
+  --border: rgba(148, 163, 184, 0.24);
+  --input: rgba(15, 23, 42, 0.9);
   --ring: #8b5cf6;
   
-  /* Sidebar */
-  --sidebar: #06060c;
+  /* Sidebar - темно-серый, чуть светлее основного фона */
+  --sidebar: #050814;
   --sidebar-foreground: #ffffff;
-  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-accent: rgba(255, 255, 255, 0.06);
   --sidebar-accent-foreground: #ffffff;
   --sidebar-primary: #8b5cf6;

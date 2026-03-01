@@ -37,7 +37,7 @@ export function DailyQuests() {
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
         <div className="space-y-0.5">
           <CardTitle className="text-base flex items-center gap-2 font-heading">
-            <Sword className="size-4 text-[#8b5cf6]" />
+            <Sword className="size-4 text-[#3b82f6]" />
             Ежедневные квесты
           </CardTitle>
           <CardDescription className="text-xs">

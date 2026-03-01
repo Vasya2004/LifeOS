@@ -57,7 +57,7 @@ export function ThemeSwitcher() {
               <Moon className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-foreground">Deep Purple</p>
+              <p className="font-medium text-foreground">Cosmic Blue</p>
               <p className="text-xs text-muted-foreground">Космическая фиолетовая</p>
             </div>
             <Check className="h-4 w-4 text-primary" />

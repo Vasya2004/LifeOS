@@ -24,9 +24,9 @@ import type {
 // ============================================
 const defaultFolders: Omit<StorageFolder, 'id' | 'userId' | 'createdAt' | 'updatedAt'>[] = [
   { name: 'Инсайты', type: 'insights', icon: '💡', color: '#fbbf24', description: 'Ключевые выводы с планом применения', isSystem: true, sortOrder: 1 },
-  { name: 'Контакты', type: 'contacts', icon: '👥', color: '#8b5cf6', description: 'Полезные знакомства и связи', isSystem: true, sortOrder: 2 },
+  { name: 'Контакты', type: 'contacts', icon: '👥', color: '#3b82f6', description: 'Полезные знакомства и связи', isSystem: true, sortOrder: 2 },
   { name: 'Ресурсы', type: 'resources', icon: '📚', color: '#22c55e', description: 'Полезные материалы и ссылки', isSystem: true, sortOrder: 3 },
-  { name: 'Источники', type: 'custom', icon: '🎯', color: '#8b5cf6', description: 'Книги, курсы, статьи для изучения', isSystem: true, sortOrder: 4 },
+  { name: 'Источники', type: 'custom', icon: '🎯', color: '#3b82f6', description: 'Книги, курсы, статьи для изучения', isSystem: true, sortOrder: 4 },
   { name: 'Шаблоны', type: 'templates', icon: '📋', color: '#ec4899', description: 'Повторяемые процессы и шаблоны', isSystem: true, sortOrder: 5 },
 ]
 

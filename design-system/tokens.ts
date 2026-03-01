@@ -12,19 +12,19 @@
 // ============================================
 
 export const colors = {
-  // Primary - Deep Purple (основной брендовый цвет)
+  // Primary - Cosmic Blue (основной брендовый цвет)
   primary: {
-    50: '#f5f3ff',
-    100: '#ede9fe',
-    200: '#ddd6fe',
-    300: '#c4b5fd',
-    400: '#a78bfa',
-    500: '#8b5cf6', // Основной - Deep Purple
-    600: '#7c3aed',
-    700: '#6d28d9',
-    800: '#5b21b6',
-    900: '#4c1d95',
-    950: '#2e1065',
+    50: '#eff6ff',
+    100: '#dbeafe',
+    200: '#bfdbfe',
+    300: '#93c5fd',
+    400: '#60a5fa',
+    500: '#3b82f6', // Основной - Cosmic Blue
+    600: '#2563eb',
+    700: '#1d4ed8',
+    800: '#1e40af',
+    900: '#1e3a8a',
+    950: '#172554',
   },
 
   // Secondary - Purple (для акцентов)
@@ -90,7 +90,7 @@ export const colors = {
     200: '#bfdbfe',
     300: '#93c5fd',
     400: '#60a5fa',
-    500: '#8b5cf6',
+    500: '#3b82f6',
     600: '#2563eb',
     700: '#1d4ed8',
     800: '#1e40af',
@@ -125,9 +125,9 @@ export const colors = {
 
   // XP Gradient colors
   xp: {
-    start: '#8b5cf6',
-    end: '#a78bfa',
-    glow: 'rgba(139, 92, 246, 0.5)',
+    start: '#3b82f6',
+    end: '#60a5fa',
+    glow: 'rgba(59, 130, 246, 0.5)',
   },
 } as const
 

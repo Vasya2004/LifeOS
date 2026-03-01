@@ -150,14 +150,14 @@ export const ACHIEVEMENT_TYPE_CONFIG: Record<AchievementType, {
     label: 'Major Goal',
     labelRu: 'Крупная цель',
     icon: 'trophy',
-    color: '#8b5cf6',
+    color: '#3b82f6',
     description: 'Значимые достижения и долгосрочные цели'
   },
   breakthrough: {
     label: 'Breakthrough',
     labelRu: 'Прорыв',
     icon: 'star',
-    color: '#8b5cf6',
+    color: '#3b82f6',
     description: 'Преодоление страхов и личных ограничений'
   },
   moment: {
@@ -175,7 +175,7 @@ export const ACHIEVEMENT_CATEGORY_CONFIG: Record<AchievementCategory, {
   icon: string
   color: string
 }> = {
-  work: { label: 'Work', labelRu: 'Работа', icon: 'briefcase', color: '#8b5cf6' },
+  work: { label: 'Work', labelRu: 'Работа', icon: 'briefcase', color: '#3b82f6' },
   health: { label: 'Health', labelRu: 'Здоровье', icon: 'heart', color: '#22c55e' },
   personal: { label: 'Personal', labelRu: 'Личное', icon: 'user', color: '#ec4899' },
   skill: { label: 'Skill', labelRu: 'Навык', icon: 'sparkles', color: '#f59e0b' },
@@ -193,8 +193,8 @@ export const EMOTION_TAG_CONFIG: Record<EmotionTag, {
   proud: { label: 'Proud', labelRu: 'Гордость', emoji: '🦁', color: '#f59e0b' },
   relieved: { label: 'Relieved', labelRu: 'Облегчение', emoji: '😌', color: '#22c55e' },
   excited: { label: 'Excited', labelRu: 'Восторг', emoji: '🤩', color: '#ec4899' },
-  grateful: { label: 'Grateful', labelRu: 'Благодарность', emoji: '🙏', color: '#8b5cf6' },
-  surprised: { label: 'Surprised', labelRu: 'Удивление', emoji: '😲', color: '#8b5cf6' },
+  grateful: { label: 'Grateful', labelRu: 'Благодарность', emoji: '🙏', color: '#3b82f6' },
+  surprised: { label: 'Surprised', labelRu: 'Удивление', emoji: '😲', color: '#3b82f6' },
   scared: { label: 'Scared', labelRu: 'Страх', emoji: '😰', color: '#ef4444' },
   joyful: { label: 'Joyful', labelRu: 'Радость', emoji: '😄', color: '#eab308' }
 }

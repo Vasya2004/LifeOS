@@ -86,9 +86,9 @@ export default function DesignSystemDemo() {
           <h2 className="text-2xl font-semibold text-white">Цвета</h2>
           <div className="grid grid-cols-4 gap-4">
             <div className="p-4 rounded-lg bg-black border border-white/[0.08]">
-              <div className="w-full h-16 rounded bg-[#8b5cf6] mb-2" />
+              <div className="w-full h-16 rounded bg-[#3b82f6] mb-2" />
               <p className="text-sm text-[#9ca3af]">Primary</p>
-              <p className="text-xs text-[#6b7280]">#8b5cf6</p>
+              <p className="text-xs text-[#6b7280]">#3b82f6</p>
             </div>
             <div className="p-4 rounded-lg bg-black border border-white/[0.08]">
               <div className="w-full h-16 rounded bg-[#0a0a0f] mb-2 border border-white/[0.08]" />

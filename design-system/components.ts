@@ -27,10 +27,10 @@ export const button = {
   variants: {
     // Primary - основное действие
     primary: `
-      bg-[#7c3aed] text-white
-      hover:bg-[#8b5cf6]
-      active:bg-[#6d28d9]
-      focus:ring-[#8b5cf6]
+      bg-[#2563eb] text-white
+      hover:bg-[#3b82f6]
+      active:bg-[#1d4ed8]
+      focus:ring-[#3b82f6]
       shadow-md hover:shadow-lg
     `,
     
@@ -53,11 +53,11 @@ export const button = {
     
     // Outline - контурная
     outline: `
-      bg-transparent text-indigo-400
-      border border-[#8b5cf6]/50
-      hover:bg-[#8b5cf6]/10 hover:border-[#8b5cf6]
-      active:bg-[#8b5cf6]/20
-      focus:ring-[#8b5cf6]
+      bg-transparent text-blue-400
+      border border-[#3b82f6]/50
+      hover:bg-[#3b82f6]/10 hover:border-[#3b82f6]
+      active:bg-[#3b82f6]/20
+      focus:ring-[#3b82f6]
     `,
     
     // Destructive - опасное действие
@@ -80,12 +80,12 @@ export const button = {
     
     // XP - для геймификации
     xp: `
-      bg-gradient-to-r from-[#7c3aed] to-purple-600 text-white
-      hover:from-[#8b5cf6] hover:to-purple-500
-      active:from-[#6d28d9] active:to-purple-700
-      focus:ring-purple-500
-      shadow-lg shadow-[#8b5cf6]/25
-      hover:shadow-xl hover:shadow-[#8b5cf6]/30
+      bg-gradient-to-r from-[#2563eb] to-blue-600 text-white
+      hover:from-[#3b82f6] hover:to-blue-500
+      active:from-[#1d4ed8] active:to-blue-700
+      focus:ring-blue-500
+      shadow-lg shadow-[#3b82f6]/25
+      hover:shadow-xl hover:shadow-[#3b82f6]/30
     `,
   },
 
@@ -115,7 +115,7 @@ export const input = {
     placeholder:text-slate-500
     transition-colors
     file:border-0 file:bg-transparent file:text-sm file:font-medium
-    focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]/50 focus:border-[#8b5cf6]
+    focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/50 focus:border-[#3b82f6]
     disabled:cursor-not-allowed disabled:opacity-50
   `,
 
@@ -147,7 +147,7 @@ export const card = {
     default: 'bg-slate-900/50 border-slate-800',
     elevated: 'bg-slate-800/50 border-slate-700 shadow-lg',
     interactive: 'bg-slate-900/50 border-slate-800 hover:border-slate-700 hover:bg-slate-800/30 transition-colors cursor-pointer',
-    primary: 'bg-indigo-950/30 border-[#8b5cf6]/20',
+    primary: 'bg-blue-950/30 border-[#3b82f6]/20',
     success: 'bg-emerald-950/30 border-emerald-500/20',
     warning: 'bg-amber-950/30 border-amber-500/20',
     error: 'bg-red-950/30 border-red-500/20',
@@ -177,15 +177,15 @@ export const badge = {
 
   variants: {
     default: 'bg-slate-800 text-slate-200 border border-slate-700',
-    primary: 'bg-[#8b5cf6]/10 text-indigo-400 border border-[#8b5cf6]/20',
-    secondary: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
+    primary: 'bg-[#3b82f6]/10 text-blue-400 border border-[#3b82f6]/20',
+    secondary: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
     success: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
     warning: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
     error: 'bg-red-500/10 text-red-400 border border-red-500/20',
-    info: 'bg-[#8b5cf6]/10 text-blue-400 border border-[#8b5cf6]/20',
+    info: 'bg-[#3b82f6]/10 text-blue-400 border border-[#3b82f6]/20',
     
     // Gamification
-    xp: 'bg-gradient-to-r from-[#8b5cf6]/20 to-purple-500/20 text-indigo-300 border border-[#8b5cf6]/30',
+    xp: 'bg-gradient-to-r from-[#3b82f6]/20 to-blue-500/20 text-blue-300 border border-[#3b82f6]/30',
     coin: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
     streak: 'bg-orange-500/10 text-orange-400 border border-orange-500/20',
   },
@@ -223,14 +223,14 @@ export const avatar = {
 export const progress = {
   base: 'relative h-2 w-full overflow-hidden rounded-full bg-slate-800',
   
-  bar: 'h-full w-full flex-1 bg-[#8b5cf6] transition-all',
+  bar: 'h-full w-full flex-1 bg-[#3b82f6] transition-all',
   
   variants: {
-    default: 'bg-[#8b5cf6]',
+    default: 'bg-[#3b82f6]',
     success: 'bg-emerald-500',
     warning: 'bg-amber-500',
     error: 'bg-red-500',
-    xp: 'bg-gradient-to-r from-[#8b5cf6] to-purple-500',
+    xp: 'bg-gradient-to-r from-[#3b82f6] to-blue-500',
     health: 'bg-gradient-to-r from-emerald-500 to-teal-500',
   },
 
@@ -368,7 +368,7 @@ export const tabs = {
     text-sm font-medium
     ring-offset-slate-900
     transition-all
-    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6] focus-visible:ring-offset-2
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] focus-visible:ring-offset-2
     disabled:pointer-events-none disabled:opacity-50
     data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-sm
   `,
@@ -376,7 +376,7 @@ export const tabs = {
   content: `
     mt-2
     ring-offset-slate-900
-    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6] focus-visible:ring-offset-2
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] focus-visible:ring-offset-2
   `,
 } as const
 
@@ -451,7 +451,7 @@ export const text = {
   
   // Colors
   muted: 'text-slate-400',
-  accent: 'text-indigo-400',
+  accent: 'text-blue-400',
   success: 'text-emerald-400',
   warning: 'text-amber-400',
   error: 'text-red-400',
@@ -465,17 +465,17 @@ export const gamification = {
   // XP Bar
   xpBar: {
     container: 'h-3 w-full overflow-hidden rounded-full bg-slate-800',
-    fill: 'h-full bg-gradient-to-r from-[#8b5cf6] via-purple-500 to-pink-500 transition-all duration-500',
-    glow: 'shadow-[0_0_10px_rgba(99,102,241,0.5)]',
+    fill: 'h-full bg-gradient-to-r from-[#3b82f6] via-blue-500 to-cyan-500 transition-all duration-500',
+    glow: 'shadow-[0_0_10px_rgba(59,130,246,0.5)]',
   },
 
   // Level Badge
   levelBadge: `
     inline-flex items-center justify-center
     rounded-full
-    bg-gradient-to-br from-[#8b5cf6] to-purple-600
+    bg-gradient-to-br from-[#3b82f6] to-blue-600
     text-white font-bold
-    shadow-lg shadow-[#8b5cf6]/25
+    shadow-lg shadow-[#3b82f6]/25
   `,
 
   // Coin Display
@@ -498,7 +498,7 @@ export const gamification = {
     locked: 'opacity-50 grayscale',
     unlocked: 'opacity-100',
     rare: 'border-amber-500/50 bg-amber-500/10',
-    epic: 'border-purple-500/50 bg-purple-500/10',
+    epic: 'border-blue-500/50 bg-blue-500/10',
     legendary: 'border-red-500/50 bg-gradient-to-br from-red-500/20 to-orange-500/20',
   },
 } as const
@@ -534,7 +534,7 @@ export const navigation = {
       transition-colors
       rounded-lg mx-2
     `,
-    itemActive: 'bg-[#8b5cf6]/10 text-indigo-400 border-r-2 border-[#8b5cf6]',
+    itemActive: 'bg-[#3b82f6]/10 text-blue-400 border-r-2 border-[#3b82f6]',
   },
 
   // Breadcrumbs
@@ -556,7 +556,7 @@ export const navigation = {
       transition-colors
       hover:bg-slate-800
     `,
-    active: 'bg-[#7c3aed] text-white hover:bg-[#8b5cf6]',
+    active: 'bg-[#2563eb] text-white hover:bg-[#3b82f6]',
     disabled: 'opacity-50 cursor-not-allowed',
   },
 } as const

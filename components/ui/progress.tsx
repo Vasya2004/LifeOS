@@ -159,13 +159,13 @@ export function XpProgress({
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-[#7c3aed] to-purple-600 text-white font-bold text-sm">
+          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] text-white font-bold text-sm">
             {level}
           </span>
           <span className="text-slate-200 font-medium">Уровень</span>
         </div>
         {showLabel && (
-          <span className="text-sm text-indigo-300">
+          <span className="text-sm text-violet-300">
             {current} / {max} XP
           </span>
         )}

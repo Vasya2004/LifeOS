@@ -7,8 +7,6 @@ import { FadeIn } from "@/components/animations"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 
-const ACCENT_COLOR = "#8b5cf6"
-
 export function HeroSection() {
   const data = useDashboardData()
   const lp = useLevelProgress()
@@ -18,9 +16,9 @@ export function HeroSection() {
   const streak = data.stats?.currentStreak ?? 0
 
   return (
-    <FadeIn>
-      <Link href="/settings" className="block group">
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:bg-accent/30 transition-colors">
+    <FadeIn className="h-full">
+      <Link href="/settings" className="block group h-full">
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:bg-accent/30 transition-colors h-full">
 
           {/* Avatar circle */}
           <div
